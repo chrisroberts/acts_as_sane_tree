@@ -7,7 +7,7 @@ module ActsAsSaneTree
   # association. This requires that you have a foreign key column, which by default is called +parent_id+.
   #
   #   class Category < ActiveRecord::Base
-  #     acts_as_tree :order => "name"
+  #     acts_as_sane_tree :order => "name"
   #   end
   #
   #   Example:
@@ -26,7 +26,7 @@ module ActsAsSaneTree
   #   root.children.first.children.first # => subchild1
   #
   # In addition to the parent and children associations, the following instance methods are added to the class
-  # after calling <tt>acts_as_tree</tt>:
+  # after calling <tt>acts_as_sane_tree</tt>:
   # * <tt>siblings</tt> - Returns all the children of the parent, excluding the current node (<tt>[subchild2]</tt> when called on <tt>subchild1</tt>)
   # * <tt>self_and_siblings</tt> - Returns all the children of the parent, including the current node (<tt>[subchild1, subchild2]</tt> when called on <tt>subchild1</tt>)
   # * <tt>ancestors</tt> - Returns all the ancestors of the current node (<tt>[child1, root]</tt> when called on <tt>subchild2</tt>)
