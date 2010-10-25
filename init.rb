@@ -1,1 +1,1 @@
-ActiveRecord::Base.send :include, ActsAsSaneTree
+require 'acts_as_sane_tree'

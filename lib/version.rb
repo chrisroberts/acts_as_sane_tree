@@ -1,3 +1,3 @@
-module SaneTree
+module ActsAsSaneTree
   VERSION = '1.0'
 end

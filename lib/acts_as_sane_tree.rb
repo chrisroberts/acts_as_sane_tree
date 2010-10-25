@@ -198,3 +198,5 @@ module ActsAsSaneTree
     end
   end
 end
+
+ActiveRecord::Base.send :include, ActsAsSaneTree
