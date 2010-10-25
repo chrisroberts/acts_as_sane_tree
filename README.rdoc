@@ -18,7 +18,7 @@ Same as acts_as_tree. Basically: Specify a parent_id or the column that holds th
 
 == Extras
 
-A couple extras are provided. Of note are:
+A few extras are provided. Of note are:
 
 * #depth -> depth from root of the current node
 * #descendents -> all descendents of the current node (provided in either flat array or nested hash)
