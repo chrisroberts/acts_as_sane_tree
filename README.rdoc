@@ -22,8 +22,8 @@ A few extras are provided. Of note are:
 
 * #depth -> depth from root of the current node
 * #descendents -> all descendents of the current node (provided in either flat array or nested hash)
-* nodes_within? -> true if any of the nodes provided in the first parameter are found within the selfs or descendents of the second parameter
-* nodes_within -> same as #nodes_within? but returns array of found nodes
+* nodes_within?(src, chk) - Returns true if chk contains any nodes found within src and all ancestors of nodes within src
+* nodes_within(src, chk) - Returns any matching nodes from chk round within src and all ancestors within src
 
 == Thanks
 

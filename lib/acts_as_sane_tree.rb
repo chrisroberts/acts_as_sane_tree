@@ -1,5 +1,6 @@
 module ActsAsSaneTree
-  def self.included(base)
+  
+  def self.included(base) # :nodoc:
     base.extend(ClassMethods)
   end
 
@@ -25,13 +26,10 @@ module ActsAsSaneTree
   #   root.children # => [child1]
   #   root.children.first.children.first # => subchild1
   #
-  # In addition to the parent and children associations, the following instance methods are added to the class
-  # after calling <tt>acts_as_sane_tree</tt>:
-  # * <tt>siblings</tt> - Returns all the children of the parent, excluding the current node (<tt>[subchild2]</tt> when called on <tt>subchild1</tt>)
-  # * <tt>self_and_siblings</tt> - Returns all the children of the parent, including the current node (<tt>[subchild1, subchild2]</tt> when called on <tt>subchild1</tt>)
-  # * <tt>ancestors</tt> - Returns all the ancestors of the current node (<tt>[child1, root]</tt> when called on <tt>subchild2</tt>)
-  # * <tt>root</tt> - Returns the root of the current node (<tt>root</tt> when called on <tt>subchild2</tt>)
-  # * <tt>nodes_within?(src, chk)</tt> - Returns true if any nodes provided in chk are found within the nodes in src or the descendents of the nodes in chk
+  # The following class methods are also added:
+  # 
+  # * <tt>nodes_within?(src, chk)</tt> - Returns true if chk contains any nodes found within src and all ancestors of nodes within src
+  # * <tt>nodes_within(src, chk)</tt> - Returns any matching nodes from chk round within src and all ancestors within src
   module ClassMethods
     # Configuration options are:
     #
@@ -143,10 +141,10 @@ module ActsAsSaneTree
     #         \_ subchild2
     # the resulting hash would look like:
     # 
-    # -> {child1 => 
-    #      {subchild1 => 
-    #        {subsubchild1 => {}},
-    #       subchild2 => {}}}
+    #  {child1 => 
+    #    {subchild1 => 
+    #      {subsubchild1 => {}},
+    #     subchild2 => {}}}
     #
     # This method will accept two parameters.
     #   * :raw -> Result is flat array. No Hash tree is built
@@ -180,8 +178,7 @@ module ActsAsSaneTree
       end
     end
     
-    # Returns the depth of the current node. 0 depth represents the root
-    # of the tree
+    # Returns the depth of the current node. 0 depth represents the root of the tree
     def depth
       res = self.class.connection.select_all(
         "WITH RECURSIVE crumbs AS (
