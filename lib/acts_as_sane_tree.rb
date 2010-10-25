@@ -29,7 +29,7 @@ module ActsAsSaneTree
   # The following class methods are also added:
   # 
   # * <tt>nodes_within?(src, chk)</tt> - Returns true if chk contains any nodes found within src and all ancestors of nodes within src
-  # * <tt>nodes_within(src, chk)</tt> - Returns any matching nodes from chk round within src and all ancestors within src
+  # * <tt>nodes_within(src, chk)</tt> - Returns any matching nodes from chk found within src and all ancestors within src
   module ClassMethods
     # Configuration options are:
     #
