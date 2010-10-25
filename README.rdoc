@@ -1,4 +1,5 @@
-== acts_as_sane_tree -> Building trees with a dash of sanity
+== acts_as_sane_tree 
+==== (Building trees with a dash of sanity)
 
 This is a drop in replacement for acts_as_tree on systems with Postgresql >= 8.4
 
@@ -8,7 +9,7 @@ A fast way to build trees.
 
 == Requirements
 
-* Postgresql version >= 8.4
+* PostgreSQL version >= 8.4
 * ActiveRecord
 
 == Configuration
@@ -26,13 +27,13 @@ A couple extras are provided. Of note are:
 
 == Thanks
 
-Thanks to David Hansson for the original
-Thanks to Postgresql for providing tools for sanity
+* Thanks to David Hansson for the original
+* Thanks to PostgreSQL for providing tools for sanity
 
 == License
 
 A large majority of this was copied directly from the original acts as tree, with the original license:
-Copyright (c) 2007 David Heinemeier Hansson, released under the MIT license 
+* Copyright (c) 2007 David Heinemeier Hansson, released under the MIT license 
 
 The new additions continue:
-Copyright (c) 2010 Chris Roberts, released under the MIT license
+* Copyright (c) 2010 Chris Roberts, released under the MIT license
