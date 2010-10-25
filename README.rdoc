@@ -9,7 +9,7 @@ A fast way to build trees.
 == Requirements
 
 * Postgresql version >= 8.4
-* Rails
+* ActiveRecord
 
 == Configuration
 
