@@ -30,6 +30,10 @@ module ActsAsSaneTree
   # 
   # * <tt>nodes_within?(src, chk)</tt> - Returns true if chk contains any nodes found within src and all ancestors of nodes within src
   # * <tt>nodes_within(src, chk)</tt> - Returns any matching nodes from chk found within src and all ancestors within src
+  # * <tt>nodes_and_descendents(*args)</tt> - Returns all nodes and descendents for given IDs or records. Accepts multiple IDs and records. Valid options:
+  #   * :raw - No Hash nesting
+  #   * :no_self - Will not return given nodes in result set
+  #   * {:depth => n} - Will set maximum depth to query
   module ClassMethods
     # Configuration options are:
     #
@@ -84,6 +88,40 @@ module ActsAsSaneTree
                 SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{self.table_name} alias1 on alias1.parent_id = crumbs.id
               ) SELECT * FROM crumbs WHERE id in (\#{c.join(', ')})"
             )
+          end
+        end
+        
+        def self.nodes_and_descendents(*args)
+          raw = args.delete(:raw)
+          no_self = args.delete(:no_self)
+          depth = args.detect{|x|x.is_a?(Hash)}
+          if(depth)
+            args.delete(depth)
+            depth = depth[:depth]
+          end
+          base_ids = args.map{|x| x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
+          q = self.find_by_sql(
+            "WITH RECURSIVE crumbs AS (
+              SELECT #{self.table_name}.*, \#{no_self ? -1 : 0} AS level FROM #{self.table_name} WHERE id in (\#{base_ids.join(', ')})
+              UNION ALL
+              SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{self.table_name} alias1 on alias1.parent_id = crumbs.id
+              \#{depth ? "WHERE crumbs.level + 1 < \#{depth.to_i}" : ''}
+            ) SELECT * FROM crumbs WHERE level >= 0 ORDER BY level, parent_id ASC"
+          )
+          unless(raw)
+            res = {}
+            cache = {}
+            q.each do |item|
+              cache[item.id] = {}
+              if(cache[item.parent_id])
+                cache[item.parent_id][item] = cache[item.id]
+              else
+                res[item] = cache[item.id]
+              end
+            end
+            res
+          else
+            q
           end
         end
 
@@ -150,32 +188,8 @@ module ActsAsSaneTree
     #   * :raw -> Result is flat array. No Hash tree is built
     #   * {:depth => n} -> Will only search for descendents to the given depth of n
     def descendents(*args)
-      depth = args.detect{|x|x.is_a?(Hash) && x[:depth]}
-      depth = depth[:depth] if depth
-      raw = args.include?(:raw)
-      q = self.class.find_by_sql(
-        "WITH RECURSIVE crumbs AS (
-          SELECT #{self.class.table_name}.*, -1 AS level FROM #{self.class.table_name} WHERE id = #{id}
-          UNION ALL
-          SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{self.class.table_name} alias1 on alias1.parent_id = crumbs.id
-          #{depth ? "WHERE crumbs.level + 1 < #{depth.to_i}" : ''}
-        ) SELECT * FROM crumbs WHERE level >= 0 ORDER BY level, parent_id ASC"
-      )
-      unless(raw)
-        res = {}
-        cache = {}
-        q.each do |item|
-          cache[item.id] = {}
-          if(cache[item.parent_id])
-            cache[item.parent_id][item] = cache[item.id]
-          else
-            res[item] = cache[item.id]
-          end
-        end
-        res
-      else
-        q
-      end
+      args.delete_if{|x| !x.is_a?(Hash) && x != :raw}
+      self.class.nodes_and_descendents(:no_self, self, *args)
     end
     
     # Returns the depth of the current node. 0 depth represents the root of the tree

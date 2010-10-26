@@ -24,6 +24,7 @@ A few extras are provided. Of note are:
 * #descendents -> all descendents of the current node (provided in either flat array or nested hash)
 * nodes_within?(src, chk) - Returns true if chk contains any nodes found within src and all ancestors of nodes within src
 * nodes_within(src, chk) - Returns any matching nodes from chk found within src and all ancestors within src
+* nodes_and_descendents(*args) - Returns all nodes and descendents for given IDs or records.
 
 == Thanks
 
