@@ -26,6 +26,10 @@ A few extras are provided. Of note are:
 * nodes_within(src, chk) - Returns any matching nodes from chk found within src and all ancestors within src
 * nodes_and_descendents(*args) - Returns all nodes and descendents for given IDs or records.
 
+== Documentation
+
+http://chrisroberts.github.com/acts_as_sane_tree
+
 == Thanks
 
 * Thanks to David Hansson for the original
