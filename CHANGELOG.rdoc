@@ -1,0 +1,6 @@
+=== v1.1
+* New class method nodes_and_descendents
+* Updated instance method #descendents to call class method nodes_and_descendents
+
+=== v1.0
+* Initial release

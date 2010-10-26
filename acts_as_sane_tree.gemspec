@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
 acts_as_sane_tree.gemspec
 init.rb
 README.rdoc
+CHANGELOG.rdoc
 lib/acts_as_sane_tree.rb
 lib/version.rb
 }
