@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+  <head>
+    <title>File: README.rdoc [RDoc Documentation]</title>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+    <link href='../rdoc-style.css' media='screen' rel='stylesheet' type='text/css'>
+    <script type='text/javascript'>
+      //<![CDATA[
+        function popupCode(url) {
+          window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+        }
+        
+        function toggleCode(id) {
+          var code = document.getElementById(id)
+        
+          code.style.display = code.style.display != 'block' ? 'block' : 'none'
+          return true
+        }
+        
+        // Make codeblocks hidden by default
+        document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+      //]]>
+    </script>
+  </head>
+  <body class='page'>
+    <div class='file' id='wrapper'>
+      <div class='header'>
+        <h1 class='name'>README.rdoc</h1>
+        <div class='paths'>
+          README.rdoc
+        </div>
+        <div class='last-update'>
+          Last Update:
+          <span class='datetime'>Mon Oct 25 18:02:29 -0700 2010</span>
+        </div>
+      </div>
+      <div id='content'>
+        <div id='text'>
+          <div id='description'>
+            <h2>acts_as_sane_tree</h2>
+            <h4>(Building trees with a dash of sanity)</h4>
+            <p>
+            This is a drop in replacement for acts_as_tree on systems with Postgresql
+            >= 8.4
+            </p>
+            <h2>What this provides</h2>
+            <p>
+            A fast way to build trees.
+            </p>
+            <h2>Requirements</h2>
+            <ul>
+            <li>PostgreSQL version >= 8.4
+            
+            </li>
+            <li>ActiveRecord
+            
+            </li>
+            </ul>
+            <h2>Configuration</h2>
+            <p>
+            Same as acts_as_tree. Basically: Specify a parent_id or the column that
+            holds the parent ID information.
+            </p>
+            <h2>Extras</h2>
+            <p>
+            A few extras are provided. Of note are:
+            </p>
+            <ul>
+            <li>depth -> depth from root of the current node
+            
+            </li>
+            <li>descendents -> all descendents of the current node (provided in either flat
+            array or nested hash)
+            
+            </li>
+            <li>nodes_within?(src, chk) - Returns true if chk contains any nodes found
+            within src and all ancestors of nodes within src
+            
+            </li>
+            <li>nodes_within(src, chk) - Returns any matching nodes from chk found within
+            src and all ancestors within src
+            
+            </li>
+            <li>nodes_and_descendents(*args) - Returns all nodes and descendents for given
+            IDs or records.
+            
+            </li>
+            </ul>
+            <h2>Documentation</h2>
+            <p>
+            <a
+            href="http://chrisroberts.github.com/acts_as_sane_tree">chrisroberts.github.com/acts_as_sane_tree</a>
+            </p>
+            <h2>Thanks</h2>
+            <ul>
+            <li>Thanks to David Hansson for the original
+            
+            </li>
+            <li>Thanks to PostgreSQL for providing tools for sanity
+            
+            </li>
+            </ul>
+            <h2>License</h2>
+            <p>
+            A large majority of this was copied directly from the original acts as
+            tree, with the original license:
+            </p>
+            <ul>
+            <li>Copyright &#169; 2007 David Heinemeier Hansson, released under the MIT
+            license
+            
+            </li>
+            </ul>
+            <p>
+            The new additions continue:
+            </p>
+            <ul>
+            <li>Copyright &#169; 2010 Chris Roberts, released under the MIT license
+            
+            </li>
+            </ul>
+          </div>
+          <div id='section'>
+          </div>
+        </div>
+      </div>
+      <div id='footer-push'></div>
+    </div>
+    <div id='footer'>
+      <a href="http://github.com/mislav/hanna/tree/master"><strong>Hanna</strong> RDoc template</a>
+    </div>
+  </body>
+</html>

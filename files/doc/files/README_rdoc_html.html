@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+  <head>
+    <title>File: README_rdoc.html [RDoc Documentation]</title>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+    <link href='../../../rdoc-style.css' media='screen' rel='stylesheet' type='text/css'>
+    <script type='text/javascript'>
+      //<![CDATA[
+        function popupCode(url) {
+          window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+        }
+        
+        function toggleCode(id) {
+          var code = document.getElementById(id)
+        
+          code.style.display = code.style.display != 'block' ? 'block' : 'none'
+          return true
+        }
+        
+        // Make codeblocks hidden by default
+        document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+      //]]>
+    </script>
+  </head>
+  <body class='page'>
+    <div class='file' id='wrapper'>
+      <div class='header'>
+        <h1 class='name'>README_rdoc.html</h1>
+        <div class='paths'>
+          doc/files/README_rdoc.html
+        </div>
+        <div class='last-update'>
+          Last Update:
+          <span class='datetime'>Mon Oct 25 17:59:05 -0700 2010</span>
+        </div>
+      </div>
+      <div id='content'>
+        <div id='text'>
+          <div id='description'>
+            <p>
+            <!DOCTYPE html PUBLIC &#8220;-//W3C//DTD HTML 4.01//EN&#8220; &#8220;<a
+            href="http://www.w3.org/TR/html4/strict.dtd">www.w3.org/TR/html4/strict.dtd</a>&#8220;>
+            <html lang=&#8217;en&#8217;>
+            </p>
+            <pre>&lt;head&gt;&#x000A;  &lt;title&gt;File: README.rdoc [RDoc Documentation]&lt;/title&gt;&#x000A;  &lt;meta content='text/html; charset=UTF-8' http-equiv='Content-Type'&gt;&#x000A;  &lt;link href='../rdoc-style.css' media='screen' rel='stylesheet' type='text/css'&gt;&#x000A;  &lt;script type='text/javascript'&gt;&#x000A;    //&lt;![CDATA[&#x000A;      function popupCode(url) {&#x000A;        window.open(url, &quot;Code&quot;, &quot;resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400&quot;)&#x000A;      }&#x000A;&#x000A;      function toggleCode(id) {&#x000A;        var code = document.getElementById(id)&#x000A;&#x000A;        code.style.display = code.style.display != 'block' ? 'block' : 'none'&#x000A;        return true&#x000A;      }&#x000A;&#x000A;      // Make codeblocks hidden by default&#x000A;      document.writeln('&lt;' + 'style type=&quot;text/css&quot;&gt;.method .source pre { display: none }&lt;\/style&gt;')&#x000A;    //]]&gt;&#x000A;  &lt;/script&gt;&#x000A;&lt;/head&gt;&#x000A;&lt;body class='page'&gt;&#x000A;  &lt;div class='file' id='wrapper'&gt;&#x000A;    &lt;div class='header'&gt;&#x000A;      &lt;h1 class='name'&gt;README.rdoc&lt;/h1&gt;&#x000A;      &lt;div class='paths'&gt;&#x000A;        README.rdoc&#x000A;      &lt;/div&gt;&#x000A;      &lt;div class='last-update'&gt;&#x000A;        Last Update:&#x000A;        &lt;span class='datetime'&gt;Mon Oct 25 17:57:19 -0700 2010&lt;/span&gt;&#x000A;      &lt;/div&gt;&#x000A;    &lt;/div&gt;&#x000A;    &lt;div id='content'&gt;&#x000A;      &lt;div id='text'&gt;&#x000A;        &lt;div id='description'&gt;&#x000A;          &lt;h2&gt;acts_as_sane_tree&lt;/h2&gt;&#x000A;          &lt;h4&gt;(Building trees with a dash of sanity)&lt;/h4&gt;&#x000A;          &lt;p&gt;&#x000A;          This is a drop in replacement for acts_as_tree on systems with Postgresql&#x000A;          &gt;= 8.4&#x000A;          &lt;/p&gt;&#x000A;          &lt;h2&gt;What this provides&lt;/h2&gt;&#x000A;          &lt;p&gt;&#x000A;          A fast way to build trees.&#x000A;          &lt;/p&gt;&#x000A;          &lt;h2&gt;Requirements&lt;/h2&gt;&#x000A;          &lt;ul&gt;&#x000A;          &lt;li&gt;PostgreSQL version &gt;= 8.4&#x000A;&#x000A;          &lt;/li&gt;&#x000A;          &lt;li&gt;ActiveRecord&#x000A;&#x000A;          &lt;/li&gt;&#x000A;          &lt;/ul&gt;&#x000A;          &lt;h2&gt;Configuration&lt;/h2&gt;&#x000A;          &lt;p&gt;&#x000A;          Same as acts_as_tree. Basically: Specify a parent_id or the column that&#x000A;          holds the parent ID information.&#x000A;          &lt;/p&gt;&#x000A;          &lt;h2&gt;Extras&lt;/h2&gt;&#x000A;          &lt;p&gt;&#x000A;          A few extras are provided. Of note are:&#x000A;          &lt;/p&gt;&#x000A;          &lt;ul&gt;&#x000A;          &lt;li&gt;depth -&gt; depth from root of the current node&#x000A;&#x000A;          &lt;/li&gt;&#x000A;          &lt;li&gt;descendents -&gt; all descendents of the current node (provided in either flat&#x000A;          array or nested hash)&#x000A;&#x000A;          &lt;/li&gt;&#x000A;          &lt;li&gt;nodes_within?(src, chk) - Returns true if chk contains any nodes found&#x000A;          within src and all ancestors of nodes within src&#x000A;&#x000A;          &lt;/li&gt;&#x000A;          &lt;li&gt;nodes_within(src, chk) - Returns any matching nodes from chk found within&#x000A;          src and all ancestors within src&#x000A;&#x000A;          &lt;/li&gt;&#x000A;          &lt;li&gt;nodes_and_descendents(*args) - Returns all nodes and descendents for given&#x000A;          IDs or records.&#x000A;&#x000A;          &lt;/li&gt;&#x000A;          &lt;/ul&gt;&#x000A;          &lt;h2&gt;Thanks&lt;/h2&gt;&#x000A;          &lt;ul&gt;&#x000A;          &lt;li&gt;Thanks to David Hansson for the original&#x000A;&#x000A;          &lt;/li&gt;&#x000A;          &lt;li&gt;Thanks to PostgreSQL for providing tools for sanity&#x000A;&#x000A;          &lt;/li&gt;&#x000A;          &lt;/ul&gt;&#x000A;          &lt;h2&gt;License&lt;/h2&gt;&#x000A;          &lt;p&gt;&#x000A;          A large majority of this was copied directly from the original acts as&#x000A;          tree, with the original license:&#x000A;          &lt;/p&gt;&#x000A;          &lt;ul&gt;&#x000A;          &lt;li&gt;Copyright &amp;#169; 2007 David Heinemeier Hansson, released under the MIT&#x000A;          license&#x000A;&#x000A;          &lt;/li&gt;&#x000A;          &lt;/ul&gt;&#x000A;          &lt;p&gt;&#x000A;          The new additions continue:&#x000A;          &lt;/p&gt;&#x000A;          &lt;ul&gt;&#x000A;          &lt;li&gt;Copyright &amp;#169; 2010 Chris Roberts, released under the MIT license&#x000A;&#x000A;          &lt;/li&gt;&#x000A;          &lt;/ul&gt;&#x000A;        &lt;/div&gt;&#x000A;        &lt;div id='section'&gt;&#x000A;        &lt;/div&gt;&#x000A;      &lt;/div&gt;&#x000A;    &lt;/div&gt;&#x000A;    &lt;div id='footer-push'&gt;&lt;/div&gt;&#x000A;  &lt;/div&gt;&#x000A;  &lt;div id='footer'&gt;&#x000A;    &lt;a href=&quot;http://github.com/mislav/hanna/tree/master&quot;&gt;&lt;strong&gt;Hanna&lt;/strong&gt; RDoc template&lt;/a&gt;&#x000A;  &lt;/div&gt;&#x000A;&lt;/body&gt;</pre>
+            <p>
+            </html>
+            </p>
+          </div>
+          <div id='section'>
+          </div>
+        </div>
+      </div>
+      <div id='footer-push'></div>
+    </div>
+    <div id='footer'>
+      <a href="http://github.com/mislav/hanna/tree/master"><strong>Hanna</strong> RDoc template</a>
+    </div>
+  </body>
+</html>

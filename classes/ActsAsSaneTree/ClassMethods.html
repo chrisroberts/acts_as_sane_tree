@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+  <head>
+    <title>: ActsAsSaneTree::ClassMethods [RDoc Documentation]</title>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+    <link href='../../rdoc-style.css' media='screen' rel='stylesheet' type='text/css'>
+    <script type='text/javascript'>
+      //<![CDATA[
+        function popupCode(url) {
+          window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+        }
+        
+        function toggleCode(id) {
+          var code = document.getElementById(id)
+        
+          code.style.display = code.style.display != 'block' ? 'block' : 'none'
+          return true
+        }
+        
+        // Make codeblocks hidden by default
+        document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+      //]]>
+    </script>
+  </head>
+  <body class='page'>
+    <div class='class' id='wrapper'>
+      <div class='header'>
+        <h1 class='name'>
+          <span class='type'>Module</span>
+          ActsAsSaneTree::ClassMethods
+        </h1>
+        <ol class='paths'>
+          <li>
+            <a href="../../files/lib/acts_as_sane_tree_rb.html">lib/acts_as_sane_tree.rb</a>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <div id='text'>
+          <div id='description'>
+            <p>
+            Specify this <tt>acts_as</tt> extension if you want to model a tree
+            structure by providing a parent association and a children association.
+            This requires that you have a foreign key column, which by default is
+            called <tt>parent_id</tt>.
+            </p>
+            <pre>class Category &lt; ActiveRecord::Base&#x000A;  acts_as_sane_tree :order =&gt; &quot;name&quot;&#x000A;end&#x000A;&#x000A;Example:&#x000A;root&#x000A; \_ child1&#x000A;      \_ subchild1&#x000A;      \_ subchild2&#x000A;&#x000A;root      = Category.create(&quot;name&quot; =&gt; &quot;root&quot;)&#x000A;child1    = root.children.create(&quot;name&quot; =&gt; &quot;child1&quot;)&#x000A;subchild1 = child1.children.create(&quot;name&quot; =&gt; &quot;subchild1&quot;)&#x000A;&#x000A;root.parent   # =&gt; nil&#x000A;child1.parent # =&gt; root&#x000A;root.children # =&gt; [child1]&#x000A;root.children.first.children.first # =&gt; subchild1</pre>
+            <p>
+            The following class methods are also added:
+            </p>
+            <ul>
+            <li><tt>nodes_within?(src, chk)</tt> - Returns true if chk contains any nodes
+            found within src and all ancestors of nodes within src
+            
+            </li>
+            <li><tt>nodes_within(src, chk)</tt> - Returns any matching nodes from chk found
+            within src and all ancestors within src
+            
+            </li>
+            <li><tt>nodes_and_descendents(*args)</tt> - Returns all nodes and descendents
+            for given IDs or records. Accepts multiple IDs and records. Valid options:
+            
+            <ul>
+            <li>:raw - No Hash nesting
+            
+            </li>
+            <li>:no_self - Will not return given nodes in result set
+            
+            </li>
+            <li>{:depth => n} - Will set maximum depth to query
+            
+            </li>
+            </ul>
+            </li>
+            </ul>
+          </div>
+          <div id='method-list'>
+            <h2>Methods</h2>
+            <h3>public instance</h3>
+            <ol>
+              <li><a href="#M000001">acts_as_sane_tree</a></li>
+            </ol>
+          </div>
+          <div id='section'>
+            <div id='methods'>
+              <h2>Public instance methods</h2>
+              <div class='method public-instance' id='method-M000001'>
+                <a name='M000001'></a>
+                <div class='synopsis'>
+                  <span class='name'>acts_as_sane_tree</span>
+                  <span class='arguments'>(options = {})</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Configuration options are:
+                  </p>
+                  <ul>
+                  <li><tt>foreign_key</tt> - specifies the column name to use for tracking of the
+                  tree (default: <tt>parent_id</tt>)
+                  
+                  </li>
+                  <li><tt>order</tt> - makes it possible to sort the children according to this
+                  SQL snippet.
+                  
+                  </li>
+                  <li><tt>counter_cache</tt> - keeps a count in a <tt>children_count</tt> column
+                  if set to <tt>true</tt> (default: <tt>false</tt>).
+                  
+                  </li>
+                  </ul>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000001-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000001-source'><span class="ruby-comment cmt"># File lib/acts_as_sane_tree.rb, line 43</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">acts_as_sane_tree</span>(<span class="ruby-identifier">options</span> = {})&#x000A;      <span class="ruby-identifier">configuration</span> = { <span class="ruby-identifier">:foreign_key</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;parent_id&quot;</span>, <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">:counter_cache</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span> }&#x000A;      <span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">update</span>(<span class="ruby-identifier">options</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)&#x000A;&#x000A;      <span class="ruby-identifier">belongs_to</span> <span class="ruby-identifier">:parent</span>, <span class="ruby-identifier">:class_name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>, <span class="ruby-identifier">:foreign_key</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:foreign_key</span>], <span class="ruby-identifier">:counter_cache</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:counter_cache</span>]&#x000A;      <span class="ruby-identifier">has_many</span> <span class="ruby-identifier">:children</span>, <span class="ruby-identifier">:class_name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>, <span class="ruby-identifier">:foreign_key</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:foreign_key</span>], <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:order</span>], <span class="ruby-identifier">:dependent</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:destroy</span>&#x000A;&#x000A;      <span class="ruby-identifier">class_eval</span> <span class="ruby-value str">&quot;include ActsAsSaneTree::InstanceMethods\n\ndef self.roots\nfind(:all, :conditions =&gt; \&quot;\#{configuration[:foreign_key]} IS NULL\&quot;, :order =&gt; \#{configuration[:order].nil? ? \&quot;nil\&quot; : %Q{\&quot;\#{configuration[:order]}\&quot;}})\nend\n\ndef self.root\nfind(:first, :conditions =&gt; \&quot;\#{configuration[:foreign_key]} IS NULL\&quot;, :order =&gt; \#{configuration[:order].nil? ? \&quot;nil\&quot; : %Q{\&quot;\#{configuration[:order]}\&quot;}})\nend\n\ndef self.nodes_within?(src, chk)\ns = (src.is_a?(Array) ? src : [src]).map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}\nc = (chk.is_a?(Array) ? chk : [chk]).map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}\nif(s.empty? || c.empty?)\nfalse\nelse\nq = self.connection.select_all(\n\&quot;WITH RECURSIVE crumbs AS (\nSELECT \#{self.table_name}.*, 0 AS level FROM \#{self.table_name} WHERE id in (\\\#{s.join(', ')})\nUNION ALL\nSELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN \#{self.table_name} alias1 on alias1.parent_id = crumbs.id\n) SELECT count(*) as count FROM crumbs WHERE id in (\\\#{c.join(', ')})\&quot;\n)\nq.first['count'].to_i &gt; 0\nend\nend\n\ndef self.nodes_within(src, chk)\ns = (src.is_a?(Array) ? src : [src]).map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}\nc = (chk.is_a?(Array) ? chk : [chk]).map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}\nif(s.empty? || c.empty?)\nnil\nelse\nself.find_by_sql(\n\&quot;WITH RECURSIVE crumbs AS (\nSELECT \#{self.table_name}.*, 0 AS level FROM \#{self.table_name} WHERE id in (\\\#{s.join(', ')})\nUNION ALL\nSELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN \#{self.table_name} alias1 on alias1.parent_id = crumbs.id\n) SELECT * FROM crumbs WHERE id in (\\\#{c.join(', ')})\&quot;\n)\nend\nend\n\ndef self.nodes_and_descendents(*args)\nraw = args.delete(:raw)\nno_self = args.delete(:no_self)\ndepth = args.detect{|x|x.is_a?(Hash)}\nif(depth)\nargs.delete(depth)\ndepth = depth[:depth]\nend\nbase_ids = args.map{|x| x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}\nq = self.find_by_sql(\n\&quot;WITH RECURSIVE crumbs AS (\nSELECT \#{self.table_name}.*, \\\#{no_self ? -1 : 0} AS level FROM \#{self.table_name} WHERE id in (\\\#{base_ids.join(', ')})\nUNION ALL\nSELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN \#{self.table_name} alias1 on alias1.parent_id = crumbs.id\n\\\#{depth ? \&quot;WHERE crumbs.level + 1 &lt; \\\#{depth.to_i}\&quot; : ''}\n) SELECT * FROM crumbs WHERE level &gt;= 0 ORDER BY level, parent_id ASC\&quot;\n)\nunless(raw)\nres = {}\ncache = {}\nq.each do |item|\ncache[item.id] = {}\nif(cache[item.parent_id])\ncache[item.parent_id][item] = cache[item.id]\nelse\nres[item] = cache[item.id]\nend\nend\nres\nelse\nq\nend\nend\n\n&quot;</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id='footer-push'></div>
+    </div>
+    <div id='footer'>
+      <a href="http://github.com/mislav/hanna/tree/master"><strong>Hanna</strong> RDoc template</a>
+    </div>
+  </body>
+</html>
