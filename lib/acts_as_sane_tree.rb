@@ -41,11 +41,15 @@ module ActsAsSaneTree
     # * <tt>order</tt> - makes it possible to sort the children according to this SQL snippet.
     # * <tt>counter_cache</tt> - keeps a count in a +children_count+ column if set to +true+ (default: +false+).
     def acts_as_sane_tree(options = {})
-      configuration = { :foreign_key => "parent_id", :order => nil, :counter_cache => nil }
+      configuration = { :foreign_key => "parent_id", :order => nil, :counter_cache => nil, :max_depth => 10000 }
       configuration.update(options) if options.is_a?(Hash)
 
       belongs_to :parent, :class_name => name, :foreign_key => configuration[:foreign_key], :counter_cache => configuration[:counter_cache]
       has_many :children, :class_name => name, :foreign_key => configuration[:foreign_key], :order => configuration[:order], :dependent => :destroy
+      
+      validates_each configuration[:foreign_key] do |record, attr, value|
+        record.errors.add attr, 'Cannot be own parent.' if !record.id.nil? && value.to_i == record.id.to_i
+      end
 
       class_eval <<-EOV
         include ActsAsSaneTree::InstanceMethods
@@ -86,6 +90,7 @@ module ActsAsSaneTree
                 SELECT #{self.table_name}.*, 0 AS level FROM #{self.table_name} WHERE id in (\#{s.join(', ')})
                 UNION ALL
                 SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{self.table_name} alias1 on alias1.parent_id = crumbs.id
+                #{configuration[:max_depth] ? "WHERE crumbs.level + 1 < #{configuration[:max_depth].to_i}" : ''}
               ) SELECT * FROM crumbs WHERE id in (\#{c.join(', ')})"
             )
           end
@@ -99,10 +104,11 @@ module ActsAsSaneTree
             args.delete(depth)
             depth = depth[:depth]
           end
+          depth = #{configuration[:max_depth]} unless depth
           base_ids = args.map{|x| x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
           q = self.find_by_sql(
             "WITH RECURSIVE crumbs AS (
-              SELECT #{self.table_name}.*, \#{no_self ? -1 : 0} AS level FROM #{self.table_name} WHERE id in (\#{base_ids.join(', ')})
+              SELECT #{self.table_name}.*, \#{no_self ? -1 : 0} AS level FROM #{self.table_name} WHERE \#{base_ids.empty? ? 'parent_id IS NULL' : "id in (\#{base_ids.join(', ')})"}
               UNION ALL
               SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{self.table_name} alias1 on alias1.parent_id = crumbs.id
               \#{depth ? "WHERE crumbs.level + 1 < \#{depth.to_i}" : ''}
@@ -143,7 +149,7 @@ module ActsAsSaneTree
           level + 1 
           FROM crumbs
           JOIN #{self.class.table_name} alias1 ON alias1.id = crumbs.parent_id
-        ) SELECT * FROM crumbs ORDER BY level DESC"
+        ) SELECT * FROM crumbs WHERE id != #{id} ORDER BY level DESC"
     end
 
     # Returns the root node of the tree.
