@@ -1,3 +1,7 @@
+=== v1.2
+* Allow nodes_and_descendents to accept no base nodes resulting in complete build of all trees
+* Add default max depth to catch runaway recursions (can be turned off by setting :max_depth to nil)
+
 === v1.1
 * New class method nodes_and_descendents
 * Updated instance method #descendents to call class method nodes_and_descendents
