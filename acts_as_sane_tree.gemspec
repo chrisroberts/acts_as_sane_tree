@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.rdoc']
-  s.add_dependency 'activerecord', '>= 2.3'
+  s.add_dependency 'activerecord', '> 0'
   s.files = %w{
 acts_as_sane_tree.gemspec
 init.rb
