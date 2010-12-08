@@ -34,6 +34,8 @@ module ActsAsSaneTree
   #   * :raw - No Hash nesting
   #   * :no_self - Will not return given nodes in result set
   #   * {:depth => n} - Will set maximum depth to query
+  #   * {:to_depth => n} - Alias for :depth
+  #   * {:at_depth => n} - Will return times at given depth (takes precedence over :depth/:to_depth)
   module ClassMethods
     # Configuration options are:
     #
@@ -99,19 +101,23 @@ module ActsAsSaneTree
         def self.nodes_and_descendents(*args)
           raw = args.delete(:raw)
           no_self = args.delete(:no_self)
-          depth = args.detect{|x|x.is_a?(Hash)}
-          if(depth)
-            args.delete(depth)
-            depth = depth[:depth]
+          at_depth = nil
+          depth = nil
+          hash = args.detect{|x|x.is_a?(Hash)}
+          if(hash)
+            args.delete(hash)
+            depth = hash[:depth] || hash[:to_depth]
+            at_depth = hash[:at_depth]
           end
-          depth = #{configuration[:max_depth]} unless depth
+          depth = #{configuration[:max_depth]} unless depth || at_depth
+          depth_clause = at_depth ? "crumbs.level + 1 = \#{at_depth.to_i}" : "crumbs.level + 1 < \#{depth.to_i}"
           base_ids = args.map{|x| x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
           q = self.find_by_sql(
             "WITH RECURSIVE crumbs AS (
               SELECT #{self.table_name}.*, \#{no_self ? -1 : 0} AS level FROM #{self.table_name} WHERE \#{base_ids.empty? ? 'parent_id IS NULL' : "id in (\#{base_ids.join(', ')})"}
               UNION ALL
               SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{self.table_name} alias1 on alias1.parent_id = crumbs.id
-              \#{depth ? "WHERE crumbs.level + 1 < \#{depth.to_i}" : ''}
+              WHERE \#{depth_clause}
             ) SELECT * FROM crumbs WHERE level >= 0 ORDER BY level, parent_id ASC"
           )
           unless(raw)
