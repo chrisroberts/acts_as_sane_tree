@@ -109,16 +109,22 @@ module ActsAsSaneTree
             depth = hash[:depth] || hash[:to_depth]
             at_depth = hash[:at_depth]
           end
-          depth = #{configuration[:max_depth]} unless depth || at_depth
-          depth_clause = at_depth ? "crumbs.level + 1 = \#{at_depth.to_i}" : "crumbs.level + 1 < \#{depth.to_i}"
+          depth ||= #{configuration[:max_depth].to_i}
+          depth_restriction = "WHERE crumbs.level + 1 < \#{depth}" if depth
+          depth_clause = nil
+          if(at_depth)
+            depth_clause = "level + 1 = \#{at_depth.to_i}"
+          elsif(depth)
+            depth_clause = "level + 1 < \#{depth.to_i}"
+          end
           base_ids = args.map{|x| x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
           q = self.find_by_sql(
             "WITH RECURSIVE crumbs AS (
               SELECT #{self.table_name}.*, \#{no_self ? -1 : 0} AS level FROM #{self.table_name} WHERE \#{base_ids.empty? ? 'parent_id IS NULL' : "id in (\#{base_ids.join(', ')})"}
               UNION ALL
               SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{self.table_name} alias1 on alias1.parent_id = crumbs.id
-              WHERE \#{depth_clause}
-            ) SELECT * FROM crumbs WHERE level >= 0 ORDER BY level, parent_id ASC"
+              \#{depth_restriction}
+            ) SELECT * FROM crumbs WHERE level >= 0 \#{"AND " + depth_clause if depth_clause} ORDER BY level, parent_id ASC"
           )
           unless(raw)
             res = {}
