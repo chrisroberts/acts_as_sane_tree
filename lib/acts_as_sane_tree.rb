@@ -1,3 +1,5 @@
+require 'active_record'
+
 module ActsAsSaneTree
   
   def self.included(base) # :nodoc:
