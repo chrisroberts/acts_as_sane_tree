@@ -18,6 +18,6 @@ init.rb
 README.rdoc
 CHANGELOG.rdoc
 lib/acts_as_sane_tree.rb
-lib/version.rb
+lib/acts_as_sane_tree/version.rb
 }
 end
