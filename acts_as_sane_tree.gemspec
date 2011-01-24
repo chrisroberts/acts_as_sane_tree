@@ -1,5 +1,5 @@
 $LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__)) + '/lib/'
-require 'lib/version'
+require 'acts_as_sane_tree/version'
 Gem::Specification.new do |s|
   s.name = 'acts_as_sane_tree'
   s.version = ActsAsSaneTree::VERSION
