@@ -19,5 +19,6 @@ README.rdoc
 CHANGELOG.rdoc
 lib/acts_as_sane_tree.rb
 lib/acts_as_sane_tree/version.rb
+rails/init.rb
 }
 end
