@@ -1,14 +1,19 @@
 module ActsAsSaneTree
   module SingletonMethods
-
+    
+    # Return all root nodes
     def roots
       find(:all, :conditions => "#{@configuration[:foreign_key]} IS NULL", :order => @configuration[:order])
     end
 
+    # Return first root node
     def root
       find(:first, :conditions => "#{@configuration[:foreign_key]} IS NULL", :order => @configuration[:order])
     end
 
+    # src:: Array of nodes
+    # chk:: Array of nodes
+    # Return true if any nodes within chk are found within src
     def nodes_within?(src, chk)
       s = (src.is_a?(Array) ? src : [src]).map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
       c = (chk.is_a?(Array) ? chk : [chk]).map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
@@ -26,6 +31,9 @@ module ActsAsSaneTree
       end
     end
 
+    # src:: Array of nodes
+    # chk:: Array of nodes
+    # Return all nodes that are within both chk and src
     def nodes_within(src, chk)
       s = (src.is_a?(Array) ? src : [src]).map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
       c = (chk.is_a?(Array) ? chk : [chk]).map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
@@ -43,6 +51,13 @@ module ActsAsSaneTree
       end
     end
     
+    # args:: ActiveRecord models or IDs - Symbols: :raw, :no_self - Hash: {:to_depth => n, :at_depth => n}
+    # Returns provided nodes plus all descendents of provided nodes in nested Hash where keys are nodes and values are children
+    # :raw:: return value will be flat array
+    # :no_self:: Do not include provided nodes in result
+    # Hash:
+    #   :to_depth:: Only retrieve values to given depth
+    #   :at_depth:: Only retrieve values from given depth
     def nodes_and_descendents(*args)
       raw = args.delete(:raw)
       no_self = args.delete(:no_self)
@@ -54,7 +69,7 @@ module ActsAsSaneTree
         depth = hash[:depth] || hash[:to_depth]
         at_depth = hash[:at_depth]
       end
-      depth ||= #{@configuration[:max_depth].to_i}
+      depth ||= @configuration[:max_depth].to_i
       depth_restriction = "WHERE crumbs.level + 1 < #{depth}" if depth
       depth_clause = nil
       if(at_depth)
