@@ -73,19 +73,28 @@ module ActsAsSaneTree
       depth_restriction = "WHERE crumbs.level + 1 < #{depth}" if depth
       depth_clause = nil
       if(at_depth)
-        depth_clause = "level + 1 = #{at_depth.to_i}"
+        depth_clause = "#{self.table_name}.level + 1 = #{at_depth.to_i}"
       elsif(depth)
-        depth_clause = "level + 1 < #{depth.to_i}"
+        depth_clause = "#{self.table_name}.level + 1 < #{depth.to_i}"
       end
       base_ids = args.map{|x| x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
-      q = self.find_by_sql(
-        "WITH RECURSIVE crumbs AS (
-          SELECT #{table_name}.*, #{no_self ? -1 : 0} AS level FROM #{table_name} WHERE #{base_ids.empty? ? 'parent_id IS NULL' : "id in (#{base_ids.join(', ')})"}
-          UNION ALL
-          SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{table_name} alias1 on alias1.parent_id = crumbs.id
-          #{depth_restriction}
-        ) SELECT * FROM crumbs WHERE level >= 0 #{"AND " + depth_clause if depth_clause} ORDER BY level, parent_id ASC"
-      )
+      q = nil
+      with_exclusive_scope do
+        q = self.from(
+          "(WITH RECURSIVE crumbs AS (
+            SELECT #{table_name}.*, #{no_self ? -1 : 0} AS level FROM #{table_name} WHERE #{base_ids.empty? ? 'parent_id IS NULL' : "id in (#{base_ids.join(', ')})"}
+            UNION ALL
+            SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{table_name} alias1 on alias1.parent_id = crumbs.id
+            #{depth_restriction}
+          ) SELECT * FROM crumbs) as #{self.table_name}"
+        ).where(
+          "#{self.table_name}.level >= 0"
+        )
+        if(depth_clause)
+          q = q.where(depth_clause)
+        end
+        q = q.order("#{self.table_name}.level ASC, #{self.table_name}.parent_id ASC")
+      end
       unless(raw)
         res = {}
         cache = {}
