@@ -40,13 +40,13 @@ module ActsAsSaneTree
       if(s.empty? || c.empty?)
         nil
       else
-        self.find_by_sql(
-          "WITH RECURSIVE crumbs AS (
+        self.from(
+          "(WITH RECURSIVE crumbs AS (
             SELECT #{table_name}.*, 0 AS level FROM #{table_name} WHERE id in (\#{s.join(', ')})
             UNION ALL
             SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{table_name} alias1 on alias1.parent_id = crumbs.id
             #{@configuration[:max_depth] ? "WHERE crumbs.level + 1 < #{@configuration[:max_depth].to_i}" : ''}
-          ) SELECT * FROM crumbs WHERE id in (#{c.join(', ')})"
+          ) SELECT * FROM crumbs WHERE id in (#{c.join(', ')})) as #{table_name}"
         )
       end
     end
