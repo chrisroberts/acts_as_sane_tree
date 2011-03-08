@@ -7,6 +7,10 @@ This is a drop in replacement for acts_as_tree on systems with Postgresql >= 8.4
 
 A fast way to build trees.
 
+== What version of Rails
+
+As of version 2, acts_as_sane_tree now proudly offers support on Rails 2 as well as Rails 3
+
 == Requirements
 
 * PostgreSQL version >= 8.4
@@ -16,17 +20,24 @@ A fast way to build trees.
 
 Same as acts_as_tree. Basically: Specify a parent_id or the column that holds the parent ID information.
 
+  class MyFancyTree < ActiveRecord::Base
+    acts_as_sane_tree
+  end
+
 == Extras
 
 A few extras are provided. Of note are:
 
 * #depth -> depth from root of the current node
-* #descendents -> all descendents of the current node (provided in either flat array or nested hash)
+* #descendents -> all descendents of the current node (provided in either scope or nested hash)
 * nodes_within?(src, chk) - Returns true if chk contains any nodes found within src and all ancestors of nodes within src
 * nodes_within(src, chk) - Returns any matching nodes from chk found within src and all ancestors within src
-* nodes_and_descendents(*args) - Returns all nodes and descendents for given IDs or records.
+* nodes_and_descendents(*args) - Returns all nodes and descendents for given IDs or records. Provided in either scope or nested hash.
+* Works properly with STI
 
 == Documentation
+
+Yes, there is documentation. Please read it and find all the fun tools at your fingertips:
 
 http://chrisroberts.github.com/acts_as_sane_tree
 
@@ -37,8 +48,8 @@ http://chrisroberts.github.com/acts_as_sane_tree
 
 == License
 
-A large majority of this was copied directly from the original acts as tree, with the original license:
+A (now not so large) majority of this was copied directly from the original acts as tree, with the original license:
 * Copyright (c) 2007 David Heinemeier Hansson, released under the MIT license 
 
 The new additions continue:
-* Copyright (c) 2010 Chris Roberts, released under the MIT license
+* Copyright (c) 2011 Chris Roberts, released under the MIT license
