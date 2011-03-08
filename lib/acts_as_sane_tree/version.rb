@@ -1,3 +1,3 @@
 module ActsAsSaneTree
-  VERSION = '1.4'
+  VERSION = '2.0'
 end
