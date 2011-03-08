@@ -6,12 +6,12 @@ module ActsAsSaneTree
       query = 
         "(WITH RECURSIVE crumbs AS (
           SELECT #{self.class.configuration[:class].table_name}.*,
-          1 AS level
+          1 AS depth
           FROM #{self.class.configuration[:class].table_name}
           WHERE id = #{id} 
           UNION ALL
           SELECT alias1.*, 
-          level + 1 
+          depth + 1 
           FROM crumbs
           JOIN #{self.class.configuration[:class].table_name} alias1 ON alias1.id = crumbs.parent_id
         ) SELECT * FROM crumbs WHERE crumbs.id != #{id}) as #{self.class.configuration[:class].table_name}"
@@ -19,13 +19,13 @@ module ActsAsSaneTree
         self.class.configuration[:class].send(:with_exclusive_scope) do
           self.class.configuration[:class].from(
             query
-          ).order("#{self.class.configuration[:class].table_name}.level DESC")
+          ).order("#{self.class.configuration[:class].table_name}.depth DESC")
         end
       else
         self.class.configuration[:class].send(:with_exclusive_scope) do
           self.class.configuration[:class].scoped(
             :from => query,
-            :order => "#{self.class.configuration[:class].table_name}.level DESC"
+            :order => "#{self.class.configuration[:class].table_name}.depth DESC"
           )
         end
       end
@@ -72,6 +72,8 @@ module ActsAsSaneTree
     # This method will accept two parameters.
     #   * :raw -> Result is scope that can more finders can be chained against with additional 'level' attribute
     #   * {:depth => n} -> Will only search for descendents to the given depth of n
+    # NOTE: You can restrict results by depth on the scope returned, but better performance will be
+    # gained by specifying it within the args so it will be applied during the recursion, not after.
     def descendents(*args)
       args.delete_if{|x| !x.is_a?(Hash) && x != :raw}
       self.class.configuration[:class].nodes_and_descendents(:no_self, self, *args)
@@ -81,30 +83,30 @@ module ActsAsSaneTree
     def depth
       query = 
         "(WITH RECURSIVE crumbs AS (
-          SELECT parent_id, 0 AS level
+          SELECT parent_id, 0 AS depth
           FROM #{self.class.configuration[:class].table_name}
           WHERE id = #{id} 
           UNION ALL
           SELECT alias1.parent_id, level + 1 
           FROM crumbs
           JOIN #{self.class.configuration[:class].table_name} alias1 ON alias1.id = crumbs.parent_id
-        ) SELECT level FROM crumbs) as #{self.class.configuration[:class].table_name}"
+        ) SELECT depth FROM crumbs) as #{self.class.configuration[:class].table_name}"
       if(self.class.rails_3?)
         self.class.configuration[:class].send(:with_exclusive_scope) do
           self.class.configuration[:class].from(
             query
           ).order(
-            "#{self.class.configuration[:class].table_name}.level DESC"
-          ).limit(1).try(:first).try(:level)
+            "#{self.class.configuration[:class].table_name}.depth DESC"
+          ).limit(1).try(:first).try(:depth)
         end
       else
         self.class.configuration[:class].send(:with_exclusive_scope) do
           self.class.configuration[:class].find(
             :first,
             :from => query,
-            :order => "#{self.class.configuration[:class].table_name}.level DESC",
+            :order => "#{self.class.configuration[:class].table_name}.depth DESC",
             :limit => 1
-          ).try(:level)
+          ).try(:depth)
         end
       end
     end

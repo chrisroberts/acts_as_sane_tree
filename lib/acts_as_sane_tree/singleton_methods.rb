@@ -64,10 +64,10 @@ module ActsAsSaneTree
       else
         query = 
           "(WITH RECURSIVE crumbs AS (
-            SELECT #{configuration[:class].table_name}.*, 0 AS level FROM #{configuration[:class].table_name} WHERE id in (\#{s.join(', ')})
+            SELECT #{configuration[:class].table_name}.*, 0 AS depth FROM #{configuration[:class].table_name} WHERE id in (\#{s.join(', ')})
             UNION ALL
             SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{configuration[:class].table_name} alias1 on alias1.parent_id = crumbs.id
-            #{configuration[:max_depth] ? "WHERE crumbs.level + 1 < #{configuration[:max_depth].to_i}" : ''}
+            #{configuration[:max_depth] ? "WHERE crumbs.depth + 1 < #{configuration[:max_depth].to_i}" : ''}
           ) SELECT * FROM crumbs WHERE id in (#{c.join(', ')})) as #{configuration[:class].table_name}"
         if(rails_3?)
           configuration[:class].from(query)
@@ -96,19 +96,19 @@ module ActsAsSaneTree
         at_depth = hash[:at_depth]
       end
       depth ||= configuration[:max_depth].to_i
-      depth_restriction = "WHERE crumbs.level + 1 < #{depth}" if depth
+      depth_restriction = "WHERE crumbs.depth + 1 < #{depth}" if depth
       depth_clause = nil
       if(at_depth)
-        depth_clause = "#{configuration[:class].table_name}.level + 1 = #{at_depth.to_i}"
+        depth_clause = "#{configuration[:class].table_name}.depth + 1 = #{at_depth.to_i}"
       elsif(depth)
-        depth_clause = "#{configuration[:class].table_name}.level + 1 < #{depth.to_i}"
+        depth_clause = "#{configuration[:class].table_name}.depth + 1 < #{depth.to_i}"
       end
       base_ids = args.map{|x| x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
       query = 
         "(WITH RECURSIVE crumbs AS (
-          SELECT #{configuration[:class].table_name}.*, #{no_self ? -1 : 0} AS level FROM #{configuration[:class].table_name} WHERE #{base_ids.empty? ? 'parent_id IS NULL' : "id in (#{base_ids.join(', ')})"}
+          SELECT #{configuration[:class].table_name}.*, #{no_self ? -1 : 0} AS depth FROM #{configuration[:class].table_name} WHERE #{base_ids.empty? ? 'parent_id IS NULL' : "id in (#{base_ids.join(', ')})"}
           UNION ALL
-          SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{configuration[:class].table_name} alias1 on alias1.parent_id = crumbs.id
+          SELECT alias1.*, crumbs.depth + 1 FROM crumbs JOIN #{configuration[:class].table_name} alias1 on alias1.parent_id = crumbs.id
           #{depth_restriction}
         ) SELECT * FROM crumbs) as #{configuration[:class].table_name}"
       q = nil
@@ -117,19 +117,19 @@ module ActsAsSaneTree
           q = configuration[:class].from(
             query
           ).where(
-            "#{configuration[:class].table_name}.level >= 0"
+            "#{configuration[:class].table_name}.depth >= 0"
           )
           if(depth_clause)
             q = q.where(depth_clause)
           end
-          q = q.order("#{configuration[:class].table_name}.level ASC, #{configuration[:class].table_name}.parent_id ASC")
+          q = q.order("#{configuration[:class].table_name}.depth ASC, #{configuration[:class].table_name}.parent_id ASC")
         end
       else
         with_exclusive_scope do
           q = configuration[:class].scoped(
             :from => query, 
             :conditions => "#{configuration[:class].table_name}.level >= 0",
-            :order => "#{configuration[:class].table_name}.level ASC, #{configuration[:class].table_name}.parent_id ASC"
+            :order => "#{configuration[:class].table_name}.depth ASC, #{configuration[:class].table_name}.parent_id ASC"
           )
           if(depth_clause)
             q = q.scoped(:conditions => depth_clause)
