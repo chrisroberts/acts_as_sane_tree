@@ -1,3 +1,6 @@
 require 'acts_as_sane_tree/acts_as_sane_tree'
+require 'acts_as_sane_tree/version'
 
-ActiveRecord::Base.send :include, ActsAsSaneTree
+if(defined?(Rails))
+  ActiveRecord::Base.send :include, ActsAsSaneTree
+end
