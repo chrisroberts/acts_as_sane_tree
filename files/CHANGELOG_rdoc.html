@@ -31,12 +31,32 @@
         </div>
         <div class='last-update'>
           Last Update:
-          <span class='datetime'>Mon Oct 25 18:25:17 -0700 2010</span>
+          <span class='datetime'>Mon Jan 24 10:58:56 -0800 2011</span>
         </div>
       </div>
       <div id='content'>
         <div id='text'>
           <div id='description'>
+            <h3>v1.3</h3>
+            <ul>
+            <li>Allow restricting results to given depth
+            
+            </li>
+            <li>Load properly within rails if provided via rubygems (bundler)
+            
+            </li>
+            </ul>
+            <h3>v1.2</h3>
+            <ul>
+            <li>Allow nodes_and_descendents to accept no base nodes resulting in complete
+            build of all trees
+            
+            </li>
+            <li>Add default max depth to catch runaway recursions (can be turned off by
+            setting :max_depth to nil)
+            
+            </li>
+            </ul>
             <h3>v1.1</h3>
             <ul>
             <li>New class method nodes_and_descendents

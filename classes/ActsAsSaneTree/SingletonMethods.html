@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+  <head>
+    <title>: ActsAsSaneTree::SingletonMethods [RDoc Documentation]</title>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+    <link href='../../rdoc-style.css' media='screen' rel='stylesheet' type='text/css'>
+    <script type='text/javascript'>
+      //<![CDATA[
+        function popupCode(url) {
+          window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+        }
+        
+        function toggleCode(id) {
+          var code = document.getElementById(id)
+        
+          code.style.display = code.style.display != 'block' ? 'block' : 'none'
+          return true
+        }
+        
+        // Make codeblocks hidden by default
+        document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+      //]]>
+    </script>
+  </head>
+  <body class='page'>
+    <div class='class' id='wrapper'>
+      <div class='header'>
+        <h1 class='name'>
+          <span class='type'>Module</span>
+          ActsAsSaneTree::SingletonMethods
+        </h1>
+        <ol class='paths'>
+          <li>
+            <a href="../../files/lib/acts_as_sane_tree/singleton_methods_rb.html">lib/acts_as_sane_tree/singleton_methods.rb</a>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <div id='text'>
+          <div id='method-list'>
+            <h2>Methods</h2>
+            <h3>public instance</h3>
+            <ol>
+              <li><a href="#M000014">nodes_and_descendents</a></li>
+              <li><a href="#M000013">nodes_within</a></li>
+              <li><a href="#M000012">nodes_within?</a></li>
+              <li><a href="#M000009">rails_3?</a></li>
+              <li><a href="#M000011">root</a></li>
+              <li><a href="#M000010">roots</a></li>
+            </ol>
+          </div>
+          <div id='section'>
+            <div id='methods'>
+              <h2>Public instance methods</h2>
+              <div class='method public-instance' id='method-M000014'>
+                <a name='M000014'></a>
+                <div class='synopsis'>
+                  <span class='name'>nodes_and_descendents</span>
+                  <span class='arguments'>(*args)</span>
+                </div>
+                <div class='description'>
+                  <table>
+                  <tr><td valign="top">args:</td><td>ActiveRecord models or IDs - Symbols: :raw, :no_self - Hash: {:to_depth =>
+                  n, :at_depth => n}
+                  
+                  </td></tr>
+                  </table>
+                  <p>
+                  Returns provided nodes plus all descendents of provided nodes in nested
+                  Hash where keys are nodes and values are children
+                  </p>
+                  <table>
+                  <tr><td valign="top">:raw:</td><td>return value will be flat array
+                  
+                  </td></tr>
+                  <tr><td valign="top">:no_self:</td><td>Do not include provided nodes in result
+                  
+                  </td></tr>
+                  </table>
+                  <p>
+                  Hash:
+                  </p>
+                  <pre>:to_depth:: Only retrieve values to given depth&#x000A;:at_depth:: Only retrieve values from given depth</pre>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000014-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000014-source'><span class="ruby-comment cmt"># File lib/acts_as_sane_tree/singleton_methods.rb, line 87</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">nodes_and_descendents</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)&#x000A;      <span class="ruby-identifier">raw</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:raw</span>)&#x000A;      <span class="ruby-identifier">no_self</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:no_self</span>)&#x000A;      <span class="ruby-identifier">at_depth</span> = <span class="ruby-keyword kw">nil</span>&#x000A;      <span class="ruby-identifier">depth</span> = <span class="ruby-keyword kw">nil</span>&#x000A;      <span class="ruby-identifier">hash</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">detect</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span><span class="ruby-identifier">x</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)}&#x000A;      <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">hash</span>)&#x000A;        <span class="ruby-identifier">args</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">hash</span>)&#x000A;        <span class="ruby-identifier">depth</span> = <span class="ruby-identifier">hash</span>[<span class="ruby-identifier">:depth</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">hash</span>[<span class="ruby-identifier">:to_depth</span>]&#x000A;        <span class="ruby-identifier">at_depth</span> = <span class="ruby-identifier">hash</span>[<span class="ruby-identifier">:at_depth</span>]&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;      <span class="ruby-identifier">depth</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:max_depth</span>].<span class="ruby-identifier">to_i</span>&#x000A;      <span class="ruby-identifier">depth_restriction</span> = <span class="ruby-node">&quot;WHERE crumbs.level + 1 &lt; #{depth}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">depth</span>&#x000A;      <span class="ruby-identifier">depth_clause</span> = <span class="ruby-keyword kw">nil</span>&#x000A;      <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">at_depth</span>)&#x000A;        <span class="ruby-identifier">depth_clause</span> = <span class="ruby-node">&quot;#{configuration[:class].table_name}.level + 1 = #{at_depth.to_i}&quot;</span>&#x000A;      <span class="ruby-keyword kw">elsif</span>(<span class="ruby-identifier">depth</span>)&#x000A;        <span class="ruby-identifier">depth_clause</span> = <span class="ruby-node">&quot;#{configuration[:class].table_name}.level + 1 &lt; #{depth.to_i}&quot;</span>&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;      <span class="ruby-identifier">base_ids</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">to_i</span>}&#x000A;      <span class="ruby-identifier">query</span> = &#x000A;        <span class="ruby-node">&quot;(WITH RECURSIVE crumbs AS (&#x000A;          SELECT #{configuration[:class].table_name}.*, #{no_self ? -1 : 0} AS level FROM #{configuration[:class].table_name} WHERE #{base_ids.empty? ? 'parent_id IS NULL' : &quot;id in (#{base_ids.join(', ')})&quot;}&#x000A;          UNION ALL&#x000A;          SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{configuration[:class].table_name} alias1 on alias1.parent_id = crumbs.id&#x000A;          #{depth_restriction}&#x000A;        ) SELECT * FROM crumbs) as #{configuration[:class].table_name}&quot;</span>&#x000A;      <span class="ruby-identifier">q</span> = <span class="ruby-keyword kw">nil</span>&#x000A;      <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">rails_3?</span>)&#x000A;        <span class="ruby-identifier">with_exclusive_scope</span> <span class="ruby-keyword kw">do</span>&#x000A;          <span class="ruby-identifier">q</span> = <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:class</span>].<span class="ruby-identifier">from</span>(&#x000A;            <span class="ruby-identifier">query</span>&#x000A;          ).<span class="ruby-identifier">where</span>(&#x000A;            <span class="ruby-node">&quot;#{configuration[:class].table_name}.level &gt;= 0&quot;</span>&#x000A;          )&#x000A;          <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">depth_clause</span>)&#x000A;            <span class="ruby-identifier">q</span> = <span class="ruby-identifier">q</span>.<span class="ruby-identifier">where</span>(<span class="ruby-identifier">depth_clause</span>)&#x000A;          <span class="ruby-keyword kw">end</span>&#x000A;          <span class="ruby-identifier">q</span> = <span class="ruby-identifier">q</span>.<span class="ruby-identifier">order</span>(<span class="ruby-node">&quot;#{configuration[:class].table_name}.level ASC, #{configuration[:class].table_name}.parent_id ASC&quot;</span>)&#x000A;        <span class="ruby-keyword kw">end</span>&#x000A;      <span class="ruby-keyword kw">else</span>&#x000A;        <span class="ruby-identifier">with_exclusive_scope</span> <span class="ruby-keyword kw">do</span>&#x000A;          <span class="ruby-identifier">q</span> = <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:class</span>].<span class="ruby-identifier">scoped</span>(&#x000A;            <span class="ruby-identifier">:from</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">query</span>, &#x000A;            <span class="ruby-identifier">:conditions</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;#{configuration[:class].table_name}.level &gt;= 0&quot;</span>,&#x000A;            <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;#{configuration[:class].table_name}.level ASC, #{configuration[:class].table_name}.parent_id ASC&quot;</span>&#x000A;          )&#x000A;          <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">depth_clause</span>)&#x000A;            <span class="ruby-identifier">q</span> = <span class="ruby-identifier">q</span>.<span class="ruby-identifier">scoped</span>(<span class="ruby-identifier">:conditions</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">depth_clause</span>)&#x000A;          <span class="ruby-keyword kw">end</span>&#x000A;        <span class="ruby-keyword kw">end</span>&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;      <span class="ruby-keyword kw">unless</span>(<span class="ruby-identifier">raw</span>)&#x000A;        <span class="ruby-identifier">res</span> = {}&#x000A;        <span class="ruby-identifier">cache</span> = {}&#x000A;        <span class="ruby-identifier">q</span>.<span class="ruby-identifier">all</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">item</span><span class="ruby-operator">|</span>&#x000A;          <span class="ruby-identifier">cache</span>[<span class="ruby-identifier">item</span>.<span class="ruby-identifier">id</span>] = {}&#x000A;          <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">cache</span>[<span class="ruby-identifier">item</span>.<span class="ruby-identifier">parent_id</span>])&#x000A;            <span class="ruby-identifier">cache</span>[<span class="ruby-identifier">item</span>.<span class="ruby-identifier">parent_id</span>][<span class="ruby-identifier">item</span>] = <span class="ruby-identifier">cache</span>[<span class="ruby-identifier">item</span>.<span class="ruby-identifier">id</span>]&#x000A;          <span class="ruby-keyword kw">else</span>&#x000A;            <span class="ruby-identifier">res</span>[<span class="ruby-identifier">item</span>] = <span class="ruby-identifier">cache</span>[<span class="ruby-identifier">item</span>.<span class="ruby-identifier">id</span>]&#x000A;          <span class="ruby-keyword kw">end</span>&#x000A;        <span class="ruby-keyword kw">end</span>&#x000A;        <span class="ruby-identifier">res</span>&#x000A;      <span class="ruby-keyword kw">else</span>&#x000A;        <span class="ruby-identifier">q</span>&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='method public-instance' id='method-M000013'>
+                <a name='M000013'></a>
+                <div class='synopsis'>
+                  <span class='name'>nodes_within</span>
+                  <span class='arguments'>(src, chk)</span>
+                </div>
+                <div class='description'>
+                  <table>
+                  <tr><td valign="top">src:</td><td>Array of nodes
+                  
+                  </td></tr>
+                  <tr><td valign="top">chk:</td><td>Array of nodes
+                  
+                  </td></tr>
+                  </table>
+                  <p>
+                  Return all nodes that are within both chk and src
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000013-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000013-source'><span class="ruby-comment cmt"># File lib/acts_as_sane_tree/singleton_methods.rb, line 59</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">nodes_within</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">chk</span>)&#x000A;      <span class="ruby-identifier">s</span> = (<span class="ruby-identifier">src</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">src</span> <span class="ruby-operator">:</span> [<span class="ruby-identifier">src</span>]).<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span><span class="ruby-identifier">x</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">to_i</span>}&#x000A;      <span class="ruby-identifier">c</span> = (<span class="ruby-identifier">chk</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">chk</span> <span class="ruby-operator">:</span> [<span class="ruby-identifier">chk</span>]).<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span><span class="ruby-identifier">x</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">to_i</span>}&#x000A;      <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">s</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">empty?</span>)&#x000A;        <span class="ruby-keyword kw">nil</span>&#x000A;      <span class="ruby-keyword kw">else</span>&#x000A;        <span class="ruby-identifier">query</span> = &#x000A;          <span class="ruby-node">&quot;(WITH RECURSIVE crumbs AS (&#x000A;            SELECT #{configuration[:class].table_name}.*, 0 AS level FROM #{configuration[:class].table_name} WHERE id in (\#{s.join(', ')})&#x000A;            UNION ALL&#x000A;            SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{configuration[:class].table_name} alias1 on alias1.parent_id = crumbs.id&#x000A;            #{configuration[:max_depth] ? &quot;WHERE crumbs.level + 1 &lt; #{configuration[:max_depth].to_i}&quot; : ''}&#x000A;          ) SELECT * FROM crumbs WHERE id in (#{c.join(', ')})) as #{configuration[:class].table_name}&quot;</span>&#x000A;        <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">rails_3?</span>)&#x000A;          <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:class</span>].<span class="ruby-identifier">from</span>(<span class="ruby-identifier">query</span>)&#x000A;        <span class="ruby-keyword kw">else</span>&#x000A;          <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:class</span>].<span class="ruby-identifier">scoped</span>(<span class="ruby-identifier">:from</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">query</span>)&#x000A;        <span class="ruby-keyword kw">end</span>&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='method public-instance' id='method-M000012'>
+                <a name='M000012'></a>
+                <div class='synopsis'>
+                  <span class='name'>nodes_within?</span>
+                  <span class='arguments'>(src, chk)</span>
+                </div>
+                <div class='description'>
+                  <table>
+                  <tr><td valign="top">src:</td><td>Array of nodes
+                  
+                  </td></tr>
+                  <tr><td valign="top">chk:</td><td>Array of nodes
+                  
+                  </td></tr>
+                  </table>
+                  <p>
+                  Return true if any nodes within chk are found within src
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000012-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000012-source'><span class="ruby-comment cmt"># File lib/acts_as_sane_tree/singleton_methods.rb, line 39</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">nodes_within?</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">chk</span>)&#x000A;      <span class="ruby-identifier">s</span> = (<span class="ruby-identifier">src</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">src</span> <span class="ruby-operator">:</span> [<span class="ruby-identifier">src</span>]).<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span><span class="ruby-identifier">x</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">to_i</span>}&#x000A;      <span class="ruby-identifier">c</span> = (<span class="ruby-identifier">chk</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">chk</span> <span class="ruby-operator">:</span> [<span class="ruby-identifier">chk</span>]).<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span><span class="ruby-identifier">x</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">to_i</span>}&#x000A;      <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">s</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">empty?</span>)&#x000A;        <span class="ruby-keyword kw">false</span>&#x000A;      <span class="ruby-keyword kw">else</span>&#x000A;        <span class="ruby-identifier">q</span> = <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:class</span>].<span class="ruby-identifier">connection</span>.<span class="ruby-identifier">select_all</span>(&#x000A;          <span class="ruby-node">&quot;WITH RECURSIVE crumbs AS (&#x000A;            SELECT #{configuration[:class].table_name}.*, 0 AS level FROM #{configuration[:class].table_name} WHERE id in (#{s.join(', ')})&#x000A;            UNION ALL&#x000A;            SELECT alias1.*, crumbs.level + 1 FROM crumbs JOIN #{configuration[:class].table_name} alias1 on alias1.parent_id = crumbs.id&#x000A;          ) SELECT count(*) as count FROM crumbs WHERE id in (#{c.join(', ')})&quot;</span>&#x000A;        )&#x000A;        <span class="ruby-identifier">q</span>.<span class="ruby-identifier">first</span>[<span class="ruby-value str">'count'</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='method public-instance' id='method-M000009'>
+                <a name='M000009'></a>
+                <div class='synopsis'>
+                  <span class='name'>rails_3?</span>
+                  <span class='arguments'>()</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Check if we are in rails 3
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000009-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000009-source'><span class="ruby-comment cmt"># File lib/acts_as_sane_tree/singleton_methods.rb, line 5</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">rails_3?</span>&#x000A;      <span class="ruby-ivar">@is_3</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Rails</span>.<span class="ruby-identifier">version</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'.'</span>).<span class="ruby-identifier">first</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'3'</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='method public-instance' id='method-M000011'>
+                <a name='M000011'></a>
+                <div class='synopsis'>
+                  <span class='name'>root</span>
+                  <span class='arguments'>()</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Return first root node
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000011-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000011-source'><span class="ruby-comment cmt"># File lib/acts_as_sane_tree/singleton_methods.rb, line 24</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">root</span>&#x000A;      <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">rails_3?</span>)&#x000A;        <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:class</span>].<span class="ruby-identifier">where</span>(<span class="ruby-node">&quot;#{configuration[:foriegn_key]} IS NULL&quot;</span>).<span class="ruby-identifier">order</span>(<span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:order</span>]).<span class="ruby-identifier">first</span>&#x000A;      <span class="ruby-keyword kw">else</span>&#x000A;        <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:class</span>].<span class="ruby-identifier">find</span>(&#x000A;          <span class="ruby-identifier">:first</span>, &#x000A;          <span class="ruby-identifier">:conditions</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;#{configuration[:foreign_key]} IS NULL&quot;</span>, &#x000A;          <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:order</span>]&#x000A;        )&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+              <div class='method public-instance' id='method-M000010'>
+                <a name='M000010'></a>
+                <div class='synopsis'>
+                  <span class='name'>roots</span>
+                  <span class='arguments'>()</span>
+                </div>
+                <div class='description'>
+                  <p>
+                  Return all root nodes
+                  </p>
+                </div>
+                <div class='source'>
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000010-source'); return false">
+                    [show source]
+                  </a>
+                  <pre id='M000010-source'><span class="ruby-comment cmt"># File lib/acts_as_sane_tree/singleton_methods.rb, line 10</span>&#x000A;    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">roots</span>&#x000A;      <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">rails_3?</span>)&#x000A;        <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:class</span>].<span class="ruby-identifier">where</span>(&#x000A;          <span class="ruby-node">&quot;#{configuration[:foreign_key]} IS NULL&quot;</span>&#x000A;        ).<span class="ruby-identifier">order</span>(<span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:order</span>])&#x000A;      <span class="ruby-keyword kw">else</span>&#x000A;        <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:class</span>].<span class="ruby-identifier">scoped</span>(&#x000A;          <span class="ruby-identifier">:conditions</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;#{configuration[:foreign_key]} IS NULL&quot;</span>,&#x000A;          <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:order</span>]&#x000A;        )&#x000A;      <span class="ruby-keyword kw">end</span>&#x000A;    <span class="ruby-keyword kw">end</span></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id='footer-push'></div>
+    </div>
+    <div id='footer'>
+      <a href="http://github.com/mislav/hanna/tree/master"><strong>Hanna</strong> RDoc template</a>
+    </div>
+  </body>
+</html>

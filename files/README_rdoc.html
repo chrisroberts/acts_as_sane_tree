@@ -31,7 +31,7 @@
         </div>
         <div class='last-update'>
           Last Update:
-          <span class='datetime'>Mon Oct 25 18:25:17 -0700 2010</span>
+          <span class='datetime'>Tue Mar 08 11:04:43 -0800 2011</span>
         </div>
       </div>
       <div id='content'>
@@ -47,6 +47,11 @@
             <p>
             A fast way to build trees.
             </p>
+            <h2>What version of Rails</h2>
+            <p>
+            As of version 2, acts_as_sane_tree now proudly offers support on Rails 2 as
+            well as Rails 3
+            </p>
             <h2>Requirements</h2>
             <ul>
             <li>PostgreSQL version >= 8.4
@@ -61,6 +66,7 @@
             Same as acts_as_tree. Basically: Specify a parent_id or the column that
             holds the parent ID information.
             </p>
+            <pre>class MyFancyTree &lt; ActiveRecord::Base&#x000A;  acts_as_sane_tree&#x000A;end</pre>
             <h2>Extras</h2>
             <p>
             A few extras are provided. Of note are:
@@ -69,8 +75,8 @@
             <li>depth -> depth from root of the current node
             
             </li>
-            <li>descendents -> all descendents of the current node (provided in either flat
-            array or nested hash)
+            <li>descendents -> all descendents of the current node (provided in either
+            scope or nested hash)
             
             </li>
             <li>nodes_within?(src, chk) - Returns true if chk contains any nodes found
@@ -82,11 +88,18 @@
             
             </li>
             <li>nodes_and_descendents(*args) - Returns all nodes and descendents for given
-            IDs or records.
+            IDs or records. Provided in either scope or nested hash.
+            
+            </li>
+            <li>Works properly with STI
             
             </li>
             </ul>
             <h2>Documentation</h2>
+            <p>
+            Yes, there is documentation. Please read it and find all the fun tools at
+            your fingertips:
+            </p>
             <p>
             <a
             href="http://chrisroberts.github.com/acts_as_sane_tree">chrisroberts.github.com/acts_as_sane_tree</a>
@@ -102,8 +115,8 @@
             </ul>
             <h2>License</h2>
             <p>
-            A large majority of this was copied directly from the original acts as
-            tree, with the original license:
+            A (now not so large) majority of this was copied directly from the original
+            acts as tree, with the original license:
             </p>
             <ul>
             <li>Copyright &#169; 2007 David Heinemeier Hansson, released under the MIT
@@ -115,7 +128,7 @@
             The new additions continue:
             </p>
             <ul>
-            <li>Copyright &#169; 2010 Chris Roberts, released under the MIT license
+            <li>Copyright &#169; 2011 Chris Roberts, released under the MIT license
             
             </li>
             </ul>
