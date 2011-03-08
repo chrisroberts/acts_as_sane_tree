@@ -34,6 +34,7 @@ A few extras are provided. Of note are:
 * nodes_within(src, chk) - Returns any matching nodes from chk found within src and all ancestors within src
 * nodes_and_descendents(*args) - Returns all nodes and descendents for given IDs or records. Provided in either scope or nested hash.
 * Works properly with STI
+* Adds 'depth' attribute to returned model instances
 
 == Documentation
 
