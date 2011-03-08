@@ -19,6 +19,9 @@ README.rdoc
 CHANGELOG.rdoc
 lib/acts_as_sane_tree.rb
 lib/acts_as_sane_tree/version.rb
+lib/acts_as_sane_tree/acts_as_sane_tree.rb
+lib/acts_as_sane_tree/singleton_methods.rb
+lib/acts_as_sane_tree/instance_methods.rb
 rails/init.rb
 }
 end
