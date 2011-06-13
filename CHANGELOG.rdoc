@@ -1,3 +1,6 @@
+=== v2.0.2
+* Fix spelling errors (thanks {Jesse}[https://github.com/jmgarrison])
+
 === v1.3
 * Allow restricting results to given depth
 * Load properly within rails if provided via rubygems (bundler)
