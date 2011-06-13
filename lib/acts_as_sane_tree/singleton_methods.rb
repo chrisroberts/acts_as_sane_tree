@@ -78,13 +78,13 @@ module ActsAsSaneTree
     end
     
     # args:: ActiveRecord models or IDs - Symbols: :raw, :no_self - Hash: {:to_depth => n, :at_depth => n}
-    # Returns provided nodes plus all descendents of provided nodes in nested Hash where keys are nodes and values are children
+    # Returns provided nodes plus all descendants of provided nodes in nested Hash where keys are nodes and values are children
     # :raw:: return value will be flat array
     # :no_self:: Do not include provided nodes in result
     # Hash:
     #   :to_depth:: Only retrieve values to given depth
     #   :at_depth:: Only retrieve values from given depth
-    def nodes_and_descendents(*args)
+    def nodes_and_descendants(*args)
       raw = args.delete(:raw)
       no_self = args.delete(:no_self)
       at_depth = nil
@@ -152,6 +152,7 @@ module ActsAsSaneTree
         q
       end
     end
+    alias_method :nodes_and_descendents, :nodes_and_descendants
 
   end
 end

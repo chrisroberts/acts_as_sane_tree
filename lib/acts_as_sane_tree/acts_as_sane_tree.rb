@@ -34,7 +34,7 @@ module ActsAsSaneTree
   # 
   # * <tt>nodes_within?(src, chk)</tt> - Returns true if chk contains any nodes found within src and all ancestors of nodes within src
   # * <tt>nodes_within(src, chk)</tt> - Returns any matching nodes from chk found within src and all ancestors within src
-  # * <tt>nodes_and_descendents(*args)</tt> - Returns all nodes and descendents for given IDs or records. Accepts multiple IDs and records. Valid options:
+  # * <tt>nodes_and_descendants(*args)</tt> - Returns all nodes and descendants for given IDs or records. Accepts multiple IDs and records. Valid options:
   #   * :raw - No Hash nesting
   #   * :no_self - Will not return given nodes in result set
   #   * {:depth => n} - Will set maximum depth to query

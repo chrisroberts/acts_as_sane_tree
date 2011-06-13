@@ -55,7 +55,7 @@ module ActsAsSaneTree
       parent_id.nil?
     end
     
-    # Returns all descendents of the current node. Each level
+    # Returns all descendants of the current node. Each level
     # is within its own hash, so for a structure like:
     #   root
     #    \_ child1
@@ -71,13 +71,14 @@ module ActsAsSaneTree
     #
     # This method will accept two parameters.
     #   * :raw -> Result is scope that can more finders can be chained against with additional 'level' attribute
-    #   * {:depth => n} -> Will only search for descendents to the given depth of n
+    #   * {:depth => n} -> Will only search for descendants to the given depth of n
     # NOTE: You can restrict results by depth on the scope returned, but better performance will be
     # gained by specifying it within the args so it will be applied during the recursion, not after.
-    def descendents(*args)
+    def descendants(*args)
       args.delete_if{|x| !x.is_a?(Hash) && x != :raw}
-      self.class.configuration[:class].nodes_and_descendents(:no_self, self, *args)
+      self.class.configuration[:class].nodes_and_descendants(:no_self, self, *args)
     end
+    alias_method :descendents, :descendants
     
     # Returns the depth of the current node. 0 depth represents the root of the tree
     def depth
