@@ -47,13 +47,26 @@ module ActsAsSaneTree
     # * <tt>order</tt> - makes it possible to sort the children according to this SQL snippet.
     # * <tt>counter_cache</tt> - keeps a count in a +children_count+ column if set to +true+ (default: +false+).
     def acts_as_sane_tree(options = {})
-      @configuration = { :foreign_key => "parent_id", :order => nil, :counter_cache => nil, :max_depth => 10000, :class => self }
+      @configuration = {:foreign_key => :parent_id, :order => nil, :max_depth => 100000, :class => self, :dependent => :destroy, :parent_override => false}
       @configuration.update(options) if options.is_a?(Hash)
 
-      class_eval do
+      self.class_eval do
         cattr_accessor :configuration
-        belongs_to :parent, :class_name => name, :foreign_key => @configuration[:foreign_key], :counter_cache => @configuration[:counter_cache]
-        has_many :children, :class_name => name, :foreign_key => @configuration[:foreign_key], :order => @configuration[:order], :dependent => :destroy
+        
+        has_many :children, 
+          :class_name => @configuration[:class].name, 
+          :foreign_key => @configuration[:foreign_key], 
+          :order => @configuration[:order], 
+          :dependent => @configuration[:dependent]
+        unless(@configuration[:parent_override])
+          belongs_to :parent, 
+            :class_name => @configuration[:class].name, 
+            :foreign_key => @configuration[:foreign_key]
+        else
+          def parent
+            self.class.where(:id => self.parent_id).first
+          end
+        end
         
         validates_each @configuration[:foreign_key] do |record, attr, value|
           record.errors.add attr, 'cannot be own parent.' if !record.id.nil? && value.to_i == record.id.to_i
