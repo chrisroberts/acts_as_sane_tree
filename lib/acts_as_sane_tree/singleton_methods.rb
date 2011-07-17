@@ -23,7 +23,7 @@ module ActsAsSaneTree
     # Return first root node
     def root
       if(rails_3?)
-        configuration[:class].where("#{configuration[:foriegn_key]} IS NULL").order(configuration[:order]).first
+        configuration[:class].where("#{configuration[:foreign_key]} IS NULL").order(configuration[:order]).first
       else
         configuration[:class].find(
           :first, 
@@ -113,38 +113,41 @@ module ActsAsSaneTree
         ) SELECT * FROM crumbs) as #{configuration[:class].table_name}"
       q = nil
       if(rails_3?)
-        with_exclusive_scope do
-          q = configuration[:class].from(
-            query
-          ).where(
-            "#{configuration[:class].table_name}.depth >= 0"
-          )
-          if(depth_clause)
-            q = q.where(depth_clause)
-          end
-          q = q.order("#{configuration[:class].table_name}.depth ASC, #{configuration[:class].table_name}.parent_id ASC")
+        q = configuration[:class].from(
+          query
+        ).where(
+          "#{configuration[:class].table_name}.depth >= 0"
+        )
+        if(depth_clause)
+          q = q.where(depth_clause)
         end
+        q = q.order("#{configuration[:class].table_name}.depth ASC, #{configuration[:class].table_name}.parent_id ASC")
       else
-        with_exclusive_scope do
-          q = configuration[:class].scoped(
-            :from => query, 
-            :conditions => "#{configuration[:class].table_name}.depth >= 0",
-            :order => "#{configuration[:class].table_name}.depth ASC, #{configuration[:class].table_name}.parent_id ASC"
-          )
-          if(depth_clause)
-            q = q.scoped(:conditions => depth_clause)
-          end
+        q = configuration[:class].scoped(
+          :from => query, 
+          :conditions => "#{configuration[:class].table_name}.depth >= 0",
+          :order => "#{configuration[:class].table_name}.depth ASC, #{configuration[:class].table_name}.parent_id ASC"
+        )
+        if(depth_clause)
+          q = q.scoped(:conditions => depth_clause)
         end
       end
+      if(defined?(ActiveRecord::Relation) && (dfs = retrieve_default_find_scope).is_a?(ActiveRecord::Relation))
+        q = q.scoped(:conditions => dfs.where_values_hash)
+      else
+        q = q.scoped(retrieve_default_find_scope)
+      end
       unless(raw)
-        res = {}
+        res = ActiveSupport::OrderedHash.new
         cache = {}
         q.all.each do |item|
-          cache[item.id] = {}
-          if(cache[item.parent_id])
-            cache[item.parent_id][item] = cache[item.id]
-          else
-            res[item] = cache[item.id]
+          res[item] = {}
+          cache[item] = res[item]
+        end
+        cache.each_pair do |item, values|
+          if(cache[item.parent])
+            cache[item.parent][item] = values
+            res.delete(item)
           end
         end
         res
@@ -153,6 +156,12 @@ module ActsAsSaneTree
       end
     end
     alias_method :nodes_and_descendents, :nodes_and_descendants
+
+    private
+
+    def retrieve_default_find_scope
+      scope(:find).respond_to?(:call) ? scope(:find).call : scope(:find)
+    end
 
   end
 end
