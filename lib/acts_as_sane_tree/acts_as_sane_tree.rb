@@ -58,11 +58,10 @@ module ActsAsSaneTree
           :foreign_key => @configuration[:foreign_key], 
           :order => @configuration[:order], 
           :dependent => @configuration[:dependent]
-        unless(@configuration[:parent_override])
-          belongs_to :parent, 
-            :class_name => @configuration[:class].name, 
-            :foreign_key => @configuration[:foreign_key]
-        else
+        belongs_to :parent, 
+          :class_name => @configuration[:class].name, 
+          :foreign_key => @configuration[:foreign_key]
+        if(@configuration[:parent_override])
           def parent
             self.class.where(:id => self.parent_id).first
           end
