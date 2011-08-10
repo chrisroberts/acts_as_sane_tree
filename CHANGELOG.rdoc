@@ -1,3 +1,7 @@
+=== v2.0.3
+* Use ordered hashes when building nested descendants (.nodes_and_descendants method)
+* Only apply dynamic depth ordering to descendant scoping
+
 === v2.0.2
 * Fix spelling errors (thanks {Jesse}[https://github.com/jmgarrison])
 
