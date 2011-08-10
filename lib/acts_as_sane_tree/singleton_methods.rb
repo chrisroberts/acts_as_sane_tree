@@ -121,12 +121,12 @@ module ActsAsSaneTree
         if(depth_clause)
           q = q.where(depth_clause)
         end
-        q = q.order("#{configuration[:class].table_name}.depth ASC, #{configuration[:class].table_name}.parent_id ASC")
+        q = q.order(configuration[:order].to_a.unshift('depth').join(', '))
       else
         q = configuration[:class].scoped(
           :from => query, 
           :conditions => "#{configuration[:class].table_name}.depth >= 0",
-          :order => "#{configuration[:class].table_name}.depth ASC, #{configuration[:class].table_name}.parent_id ASC"
+          :order => configuration[:order].to_a.unshift('depth').join(', ')
         )
         if(depth_clause)
           q = q.scoped(:conditions => depth_clause)
@@ -139,9 +139,9 @@ module ActsAsSaneTree
       end
       unless(raw)
         res = ActiveSupport::OrderedHash.new
-        cache = {}
+        cache = ActiveSupport::OrderedHash.new
         q.all.each do |item|
-          res[item] = {}
+          res[item] = ActiveSupport::OrderedHash.new
           cache[item] = res[item]
         end
         cache.each_pair do |item, values|
