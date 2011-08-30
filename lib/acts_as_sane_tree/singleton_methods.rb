@@ -121,12 +121,12 @@ module ActsAsSaneTree
         if(depth_clause)
           q = q.where(depth_clause)
         end
-        q = q.order(configuration[:order].to_a.unshift('depth').join(', '))
+        q = q.order(Array(configuration[:order]).join(', '))
       else
         q = configuration[:class].scoped(
           :from => query, 
           :conditions => "#{configuration[:class].table_name}.depth >= 0",
-          :order => configuration[:order].to_a.unshift('depth').join(', ')
+          :order => Array(configuration[:order]).join(', ')
         )
         if(depth_clause)
           q = q.scoped(:conditions => depth_clause)
