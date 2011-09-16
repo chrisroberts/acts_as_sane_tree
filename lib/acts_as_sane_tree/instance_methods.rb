@@ -83,33 +83,16 @@ module ActsAsSaneTree
     # Returns the depth of the current node. 0 depth represents the root of the tree
     def depth
       query = 
-        "(WITH RECURSIVE crumbs AS (
-          SELECT parent_id, 0 AS depth
+        "WITH RECURSIVE crumbs AS (
+          SELECT parent_id, 0 AS level
           FROM #{self.class.configuration[:class].table_name}
-          WHERE id = #{id} 
+          WHERE id = #{self.id} 
           UNION ALL
           SELECT alias1.parent_id, level + 1 
           FROM crumbs
           JOIN #{self.class.configuration[:class].table_name} alias1 ON alias1.id = crumbs.parent_id
-        ) SELECT depth FROM crumbs) as #{self.class.configuration[:class].table_name}"
-      if(self.class.rails_3?)
-        self.class.configuration[:class].send(:with_exclusive_scope) do
-          self.class.configuration[:class].from(
-            query
-          ).order(
-            "#{self.class.configuration[:class].table_name}.depth DESC"
-          ).limit(1).try(:first).try(:depth)
-        end
-      else
-        self.class.configuration[:class].send(:with_exclusive_scope) do
-          self.class.configuration[:class].find(
-            :first,
-            :from => query,
-            :order => "#{self.class.configuration[:class].table_name}.depth DESC",
-            :limit => 1
-          ).try(:depth)
-        end
-      end
+        ) SELECT level FROM crumbs ORDER BY level DESC LIMIT 1"
+      ActiveRecord::Base.connection.select_all(query).first.try(:[], 'level')
     end
   end
 end

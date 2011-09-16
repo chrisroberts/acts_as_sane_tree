@@ -121,21 +121,23 @@ module ActsAsSaneTree
         if(depth_clause)
           q = q.where(depth_clause)
         end
-        q = q.order(Array(configuration[:order]).join(', '))
+        if(configuration[:order].present?)
+          q = q.order(configuration[:order])
+        end
       else
         q = configuration[:class].scoped(
           :from => query, 
-          :conditions => "#{configuration[:class].table_name}.depth >= 0",
-          :order => Array(configuration[:order]).join(', ')
+          :conditions => "#{configuration[:class].table_name}.depth >= 0"
         )
+        if(configuration[:order].present?)
+          q = q.scoped(:order => configuration[:order])
+        end
         if(depth_clause)
           q = q.scoped(:conditions => depth_clause)
         end
       end
-      if(defined?(ActiveRecord::Relation) && (dfs = retrieve_default_find_scope).is_a?(ActiveRecord::Relation))
-        q = q.scoped(:conditions => dfs.where_values_hash)
-      else
-        q = q.scoped(retrieve_default_find_scope)
+      unless(rails_3?)
+        q = q.scoped(scope(:find))
       end
       unless(raw)
         res = ActiveSupport::OrderedHash.new
@@ -156,12 +158,6 @@ module ActsAsSaneTree
       end
     end
     alias_method :nodes_and_descendents, :nodes_and_descendants
-
-    private
-
-    def retrieve_default_find_scope
-      scope(:find).respond_to?(:call) ? scope(:find).call : scope(:find)
-    end
 
   end
 end
