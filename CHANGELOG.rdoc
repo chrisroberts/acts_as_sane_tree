@@ -1,3 +1,7 @@
+=== v2.0.4
+* Clean up default scope methodology within nodes_and_descendants (fixes scope smashing issues in rails 3)
+* Clean up #depth implementation to be direct instead of incurring AR overhead
+
 === v2.0.3
 * Use ordered hashes when building nested descendants (.nodes_and_descendants method)
 * Only apply dynamic depth ordering to descendant scoping
