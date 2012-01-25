@@ -2,3 +2,4 @@
 !.gitignore
 *.lock
 *.gem
+!.travis.yml
