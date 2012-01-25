@@ -99,9 +99,9 @@ module ActsAsSaneTree
       depth_restriction = "WHERE crumbs.depth + 1 < #{depth}" if depth
       depth_clause = nil
       if(at_depth)
-        depth_clause = "#{configuration[:class].table_name}.depth + 1 = #{at_depth.to_i}"
+        depth_clause = "#{configuration[:class].table_name}.depth + 1 = #{at_depth.to_i + 1}"
       elsif(depth)
-        depth_clause = "#{configuration[:class].table_name}.depth + 1 < #{depth.to_i}"
+        depth_clause = "#{configuration[:class].table_name}.depth + 1 < #{depth.to_i + 2}"
       end
       base_ids = args.map{|x| x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
       query = 
