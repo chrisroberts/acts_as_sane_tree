@@ -3,7 +3,7 @@ module ActsAsSaneTree
     
     # Check if we are in rails 3
     def rails_3?
-      @is_3 ||= Rails.version.split('.').first == '3'
+      @is_3 ||= !defined?(Arel).nil?
     end
 
     # Return all root nodes
@@ -64,7 +64,7 @@ module ActsAsSaneTree
       else
         query = 
           "(WITH RECURSIVE crumbs AS (
-            SELECT #{configuration[:class].table_name}.*, 0 AS depth FROM #{configuration[:class].table_name} WHERE id in (\#{s.join(', ')})
+            SELECT #{configuration[:class].table_name}.*, 0 AS depth FROM #{configuration[:class].table_name} WHERE id in (#{s.join(', ')})
             UNION ALL
             SELECT alias1.*, crumbs.depth + 1 FROM crumbs JOIN #{configuration[:class].table_name} alias1 on alias1.parent_id = crumbs.id
             #{configuration[:max_depth] ? "WHERE crumbs.depth + 1 < #{configuration[:max_depth].to_i}" : ''}
