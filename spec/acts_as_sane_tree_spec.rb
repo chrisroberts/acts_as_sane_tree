@@ -15,7 +15,7 @@ describe ActsAsSaneTree do
 
   describe "when requesting root nodes" do
     it "should return a scoping" do
-      assert_kind_of AR_SCOPE, Node.roots
+      assert_equal AR_SCOPE.name, Node.roots.class.name
     end
     it "should return all root nodes" do
       assert_equal Node.count(:conditions => {:parent_id => nil}), Node.roots.count
@@ -47,7 +47,11 @@ describe ActsAsSaneTree do
 
   describe "when requesting children" do
     it "should be scope-able" do
-      assert_kind_of AR_SCOPE, Node.first.children.scoped
+      if(AREL)
+        assert_kind_of AR_SCOPE, Node.first.children.scoped
+      else
+        assert_equal AR_SCOPE.name, Node.first.children.scoped({}).class.name
+      end
     end
     it "should provide nodes with parent's ID set to parent.id" do
       parent = Node.roots.first
@@ -70,7 +74,7 @@ describe ActsAsSaneTree do
       @node = Node.last
     end
     it "should return a scoping" do
-      assert_kind_of AR_SCOPE, @node.ancestors
+      assert_equal AR_SCOPE.name, @node.ancestors.scoped({}).class.name
     end
     it "should provide ancestor chain in correct order with root being at the zero index" do
       holder = @node
@@ -123,7 +127,7 @@ describe ActsAsSaneTree do
 
     describe "when specifying :raw" do
       it "should provide a scope" do
-        assert_kind_of AR_SCOPE, @root.descendants(:raw)
+        assert_equal AR_SCOPE.name, @root.descendants(:raw).class.name
       end
       it "should not provide root nodes" do
         assert_equal 0, @root.descendants(:raw).count(:conditions => {:parent_id => nil})
@@ -139,8 +143,13 @@ describe ActsAsSaneTree do
         end
       end
       it "should allow filtering by depth from current node" do
-        assert @root.children.include?(@root.descendants(:raw).where(:depth => 0).first), 'Expecting depth filtered descendants to be within Node\'s children'
-        assert @root.children.map(&:children).flatten.include?(@root.descendants(:raw).where(:depth => 1).first), 'Expecting depth filtered descendants to be within children of Node\'s children'
+        if(AREL)
+          assert @root.children.include?(@root.descendants(:raw).where(:depth => 0).first), 'Expecting depth filtered descendants to be within Node\'s children'
+          assert @root.children.map(&:children).flatten.include?(@root.descendants(:raw).where(:depth => 1).first), 'Expecting depth filtered descendants to be within children of Node\'s children'
+        else
+          assert @root.children.include?(@root.descendants(:raw).find(:first, :conditions => {:depth => 0})), 'Expecting depth filtered descendants to be within Node\'s children'
+          assert @root.children.map(&:children).flatten.include?(@root.descendants(:raw).find(:first, :conditions => {:depth => 1})), 'Expecting depth filtered descendants to be within children of Node\'s children'
+        end
       end
     end
   end
@@ -195,7 +204,7 @@ describe ActsAsSaneTree do
         assert_kind_of ActiveSupport::OrderedHash, Node.nodes_and_descendants
       end
       it "should provide a scope" do
-        assert_kind_of AR_SCOPE, Node.nodes_and_descendants(:raw)
+        assert_equal AR_SCOPE.name, Node.nodes_and_descendants(:raw).class.name
       end
       it "should allow requesting only nodes from a specific depth" do
         Node.nodes_and_descendants(:raw, :at_depth => 0).each do |node|
