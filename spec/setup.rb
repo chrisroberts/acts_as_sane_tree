@@ -1,6 +1,10 @@
 require 'rubygems'
 require 'bundler/setup'
-require 'pg'
+if(RUBY_PLATFORM == 'java')
+  require 'jdbc/postgres'
+else
+  require 'pg'
+end
 require 'active_record'
 require 'active_record/migration'
 require 'benchmark'

@@ -3,6 +3,8 @@ source :rubygems
 gem 'activerecord', '~> 3.2.0'
 gem 'rake'
 gem 'minitest'
-gem 'pg'
+gem 'pg', :platform => [:ruby, :mswin, :mingw]
+gem 'activerecord-jdbcpostgresql-adapter', :platform => :jruby
+gem 'jdbc-postgres', :platform => :jruby
 
 gemspec :path => '../'
