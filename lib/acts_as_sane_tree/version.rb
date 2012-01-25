@@ -13,6 +13,6 @@ module ActsAsSaneTree
     end
   end
 
-  VERSION = Version.new('2.0.4')
+  VERSION = Version.new('2.0.5')
 end
 
