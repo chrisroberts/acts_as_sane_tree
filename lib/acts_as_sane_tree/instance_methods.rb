@@ -92,7 +92,7 @@ module ActsAsSaneTree
           FROM crumbs
           JOIN #{self.class.configuration[:class].table_name} alias1 ON alias1.id = crumbs.parent_id
         ) SELECT level FROM crumbs ORDER BY level DESC LIMIT 1"
-      ActiveRecord::Base.connection.select_all(query).first.try(:[], 'level')
+      ActiveRecord::Base.connection.select_all(query).first.try(:[], 'level').try(:to_i)
     end
   end
 end
