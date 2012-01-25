@@ -8,6 +8,9 @@ rvm:
   - rbx-18mode
   - rbx-19mode
   - ree
+before_install:
+  - gem update --system
+  - gem --version # make sure rubygems actually were updated
 before_script:
   - "psql -U postgres -c 'create database tree_test;'"
 script: bundle exec rake test
