@@ -1,6 +1,8 @@
 == acts_as_sane_tree 
 ==== (Building trees with a dash of sanity)
 
+{<img src="https://secure.travis-ci.org/chrisroberts/acts_as_sane_tree.png" />}[http://travis-ci.org/chrisroberts/acts_as_sane_tree]
+
 This is a drop in replacement for acts_as_tree on systems with Postgresql >= 8.4
 
 == What this provides
