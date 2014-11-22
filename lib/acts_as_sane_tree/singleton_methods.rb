@@ -1,6 +1,6 @@
 module ActsAsSaneTree
   module SingletonMethods
-    
+
     # Check if we are in rails 3
     def rails_3?
       @is_3 ||= !defined?(Arel).nil?
@@ -26,8 +26,8 @@ module ActsAsSaneTree
         configuration[:class].where("#{configuration[:foreign_key]} IS NULL").order(configuration[:order]).first
       else
         configuration[:class].find(
-          :first, 
-          :conditions => "#{configuration[:foreign_key]} IS NULL", 
+          :first,
+          :conditions => "#{configuration[:foreign_key]} IS NULL",
           :order => configuration[:order]
         )
       end
@@ -57,12 +57,12 @@ module ActsAsSaneTree
     # chk:: Array of nodes
     # Return all nodes that are within both chk and src
     def nodes_within(src, chk)
-      s = (src.is_a?(Array) ? src : [src]).map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
-      c = (chk.is_a?(Array) ? chk : [chk]).map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
+      s = (src.is_a?(Array) ? src : [src]).to_ary.map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
+      c = (chk.is_a?(Array) ? chk : [chk]).to_ary.map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
       if(s.empty? || c.empty?)
         nil
       else
-        query = 
+        query =
           "(WITH RECURSIVE crumbs AS (
             SELECT #{configuration[:class].table_name}.*, 0 AS depth FROM #{configuration[:class].table_name} WHERE id in (#{s.join(', ')})
             UNION ALL
@@ -76,7 +76,7 @@ module ActsAsSaneTree
         end
       end
     end
-    
+
     # args:: ActiveRecord models or IDs - Symbols: :raw, :no_self - Hash: {:to_depth => n, :at_depth => n}
     # Returns provided nodes plus all descendants of provided nodes in nested Hash where keys are nodes and values are children
     # :raw:: return value will be flat array
@@ -104,7 +104,7 @@ module ActsAsSaneTree
         depth_clause = "#{configuration[:class].table_name}.depth + 1 < #{depth.to_i + 2}"
       end
       base_ids = args.map{|x| x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
-      query = 
+      query =
         "(WITH RECURSIVE crumbs AS (
           SELECT #{configuration[:class].table_name}.*, #{no_self ? -1 : 0} AS depth FROM #{configuration[:class].table_name} WHERE #{base_ids.empty? ? 'parent_id IS NULL' : "id in (#{base_ids.join(', ')})"}
           UNION ALL
@@ -126,7 +126,7 @@ module ActsAsSaneTree
         end
       else
         q = configuration[:class].scoped(
-          :from => query, 
+          :from => query,
           :conditions => "#{configuration[:class].table_name}.depth >= 0"
         )
         if(configuration[:order].present?)
