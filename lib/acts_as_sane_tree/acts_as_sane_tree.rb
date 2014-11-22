@@ -61,7 +61,7 @@ module ActsAsSaneTree
             :dependent => @configuration[:dependent]
         else
           has_many :children,
-            ->{ order self.configuration[:order] },
+            proc{ order self.configuration[:order] },
             :class_name => @configuration[:class].name,
             :foreign_key => @configuration[:foreign_key],
             :dependent => @configuration[:dependent]
