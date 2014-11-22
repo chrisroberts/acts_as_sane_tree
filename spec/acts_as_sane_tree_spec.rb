@@ -48,7 +48,7 @@ describe ActsAsSaneTree do
   describe "when requesting children" do
     it "should be scope-able" do
       if(AREL)
-        assert_kind_of AR_SCOPE, Node.first.children.scoped
+        assert_kind_of AR_SCOPE, Node.first.children.where(nil)
       else
         assert_equal AR_SCOPE.name, Node.first.children.scoped({}).class.name
       end
@@ -74,7 +74,9 @@ describe ActsAsSaneTree do
       @node = Node.last
     end
     it "should return a scoping" do
-      assert_equal AR_SCOPE.name, @node.ancestors.scoped({}).class.name
+      unless(AREL)
+        assert_equal AR_SCOPE.name, @node.ancestors.scoped({}).class.name
+      end
     end
     it "should provide ancestor chain in correct order with root being at the zero index" do
       holder = @node
