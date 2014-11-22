@@ -57,8 +57,6 @@ module ActsAsSaneTree
     # chk:: Array of nodes
     # Return all nodes that are within both chk and src
     def nodes_within(src, chk)
-      require 'pry'
-      binding.pry
       s = [src].flatten.compact.map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
       c = [chk].flatten.compact.map{|x|x.is_a?(ActiveRecord::Base) ? x.id : x.to_i}
       if(s.empty? || c.empty?)
