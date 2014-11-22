@@ -1,28 +1,29 @@
 module ActsAsSaneTree
   module InstanceMethods
 
-    # Returns all ancestors of the current node. 
+    # Returns all ancestors of the current node.
     def ancestors
-      query = 
+      query =
         "(WITH RECURSIVE crumbs AS (
           SELECT #{self.class.configuration[:class].table_name}.*,
           1 AS depth
           FROM #{self.class.configuration[:class].table_name}
-          WHERE id = #{id} 
+          WHERE id = #{id}
           UNION ALL
-          SELECT alias1.*, 
-          depth + 1 
+          SELECT alias1.*,
+          depth + 1
           FROM crumbs
           JOIN #{self.class.configuration[:class].table_name} alias1 ON alias1.id = crumbs.parent_id
         ) SELECT * FROM crumbs WHERE crumbs.id != #{id}) as #{self.class.configuration[:class].table_name}"
-      if(self.class.rails_3?)
-        self.class.configuration[:class].send(:with_exclusive_scope) do
+      scope_strip_method = self.class.configuration[:class].methods.map(&:to_sym).include?(:unscoped) ? :unscoped : :with_exclusive_scope
+      if(self.class.rails_arel?)
+        self.class.configuration[:class].send(scope_strip_method) do
           self.class.configuration[:class].from(
             query
           ).order("#{self.class.configuration[:class].table_name}.depth DESC")
         end
       else
-        self.class.configuration[:class].send(:with_exclusive_scope) do
+        self.class.configuration[:class].send(scope_strip_method) do
           self.class.configuration[:class].scoped(
             :from => query,
             :order => "#{self.class.configuration[:class].table_name}.depth DESC"
@@ -49,12 +50,12 @@ module ActsAsSaneTree
     def self_and_siblings
       parent ? parent.children : self.class.configuration[:class].roots
     end
-    
+
     # Returns if the current node is a root
     def root?
       parent_id.nil?
     end
-    
+
     # Returns all descendants of the current node. Each level
     # is within its own hash, so for a structure like:
     #   root
@@ -63,9 +64,9 @@ module ActsAsSaneTree
     #               \_ subsubchild1
     #         \_ subchild2
     # the resulting hash would look like:
-    # 
-    #  {child1 => 
-    #    {subchild1 => 
+    #
+    #  {child1 =>
+    #    {subchild1 =>
     #      {subsubchild1 => {}},
     #     subchild2 => {}}}
     #
@@ -79,16 +80,16 @@ module ActsAsSaneTree
       self.class.configuration[:class].nodes_and_descendants(:no_self, self, *args)
     end
     alias_method :descendents, :descendants
-    
+
     # Returns the depth of the current node. 0 depth represents the root of the tree
     def depth
-      query = 
+      query =
         "WITH RECURSIVE crumbs AS (
           SELECT parent_id, 0 AS level
           FROM #{self.class.configuration[:class].table_name}
-          WHERE id = #{self.id} 
+          WHERE id = #{self.id}
           UNION ALL
-          SELECT alias1.parent_id, level + 1 
+          SELECT alias1.parent_id, level + 1
           FROM crumbs
           JOIN #{self.class.configuration[:class].table_name} alias1 ON alias1.id = crumbs.parent_id
         ) SELECT level FROM crumbs ORDER BY level DESC LIMIT 1"

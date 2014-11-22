@@ -2,13 +2,13 @@ module ActsAsSaneTree
   module SingletonMethods
 
     # Check if we are in rails 3
-    def rails_3?
-      @is_3 ||= !defined?(Arel).nil?
+    def rails_arel?
+      @is_arel ||= !defined?(Arel).nil?
     end
 
     # Return all root nodes
     def roots
-      if(rails_3?)
+      if(rails_arel?)
         configuration[:class].where(
           "#{configuration[:foreign_key]} IS NULL"
         ).order(configuration[:order])
@@ -22,7 +22,7 @@ module ActsAsSaneTree
 
     # Return first root node
     def root
-      if(rails_3?)
+      if(rails_arel?)
         configuration[:class].where("#{configuration[:foreign_key]} IS NULL").order(configuration[:order]).first
       else
         configuration[:class].find(
@@ -69,7 +69,7 @@ module ActsAsSaneTree
             SELECT alias1.*, crumbs.depth + 1 FROM crumbs JOIN #{configuration[:class].table_name} alias1 on alias1.parent_id = crumbs.id
             #{configuration[:max_depth] ? "WHERE crumbs.depth + 1 < #{configuration[:max_depth].to_i}" : ''}
           ) SELECT * FROM crumbs WHERE id in (#{c.join(', ')})) as #{configuration[:class].table_name}"
-        if(rails_3?)
+        if(rails_arel?)
           configuration[:class].from(query)
         else
           configuration[:class].scoped(:from => query)
@@ -112,7 +112,7 @@ module ActsAsSaneTree
           #{depth_restriction}
         ) SELECT * FROM crumbs) as #{configuration[:class].table_name}"
       q = nil
-      if(rails_3?)
+      if(rails_arel?)
         q = configuration[:class].from(
           query
         ).where(
@@ -136,7 +136,7 @@ module ActsAsSaneTree
           q = q.scoped(:conditions => depth_clause)
         end
       end
-      unless(rails_3?)
+      unless(rails_arel?)
         q = q.scoped(scope(:find))
       end
       unless(raw)
