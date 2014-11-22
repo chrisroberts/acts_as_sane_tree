@@ -8,8 +8,16 @@ describe ActsAsSaneTree do
   describe "after suite setup" do
     it "should have populated nodes" do
       assert Node.count > 0, 'Expecting Node instances to be available'
-      assert Node.count(:conditions => {:parent_id => nil}) > 0, 'Expecting root Node instances to be available'
-      assert Node.count(:conditions => "#{Node.table_name}.parent_id IS NOT NULL") > 0, 'Expecting child Node instances to be available'
+      if(AREL)
+        assert Node.where(:parent_id => nil).count > 0, 'Expecting root Node instances to be available'
+      else
+        assert Node.count(:conditions => {:parent_id => nil}) > 0, 'Expecting root Node instances to be available'
+      end
+      if(AREL)
+        assert Node.where("#{Node.table_name}.parent_id IS NOT NULL").count > 0, 'Expecting child Node instances to be available'
+      else
+        assert Node.count(:conditions => "#{Node.table_name}.parent_id IS NOT NULL") > 0, 'Expecting child Node instances to be available'
+      end
     end
   end
 
@@ -18,7 +26,11 @@ describe ActsAsSaneTree do
       assert_equal AR_SCOPE.name, Node.roots.class.name
     end
     it "should return all root nodes" do
-      assert_equal Node.count(:conditions => {:parent_id => nil}), Node.roots.count
+      if(AREL)
+        assert_equal Node.where(:parent_id => nil).count, Node.roots.count
+      else
+        assert_equal Node.count(:conditions => {:parent_id => nil}), Node.roots.count
+      end
       refute Node.roots.map(&:parent_id).detect{|x|!x.nil?}, 'Expecting root Node\'s parent_id to be nil'
     end
     it "should allow scope chaining" do
@@ -132,7 +144,11 @@ describe ActsAsSaneTree do
         assert_equal AR_SCOPE.name, @root.descendants(:raw).class.name
       end
       it "should not provide root nodes" do
-        assert_equal 0, @root.descendants(:raw).count(:conditions => {:parent_id => nil})
+        if(AREL)
+          assert_equal 0, @root.descendants(:raw).where(:parent_id => nil).count
+        else
+          assert_equal 0, @root.descendants(:raw).count(:conditions => {:parent_id => nil})
+        end
       end
       it "should provide all descendants" do
         assert_equal 50, @root.descendants(:raw).count
@@ -181,7 +197,11 @@ describe ActsAsSaneTree do
 
   describe "when using an acts_as_sane_tree class" do
     it "should provide all roots" do
-      assert_equal Node.count(:conditions => {:parent_id => nil}), Node.roots.count
+      if(AREL)
+        assert_equal Node.where(:parent_id => nil).count, Node.roots.count
+      else
+        assert_equal Node.count(:conditions => {:parent_id => nil}), Node.roots.count
+      end
     end
     it "should provide a single root" do
       assert_kind_of Node, Node.root
