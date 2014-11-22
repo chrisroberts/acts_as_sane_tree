@@ -1,8 +1,5 @@
 require 'rubygems'
 require 'bundler/setup'
-if(RUBY_PLATFORM == 'java')
-  require 'pg'
-end
 require 'active_record'
 require 'active_record/migration'
 require 'benchmark'
@@ -12,7 +9,10 @@ require 'minitest/autorun'
 ActiveRecord::Base.establish_connection(
   :adapter => 'postgresql',
   :database => 'tree_test',
-  :username => 'postgres'
+  :username => 'tree',
+  :password => 'tree-password',
+  :host => '127.0.0.1'
+#  :username => 'postgres'
 )
 
 class Node < ActiveRecord::Base
@@ -57,4 +57,3 @@ nodes = []
     nodes[i] << node
   end
 end
-
