@@ -9,10 +9,7 @@ require 'minitest/autorun'
 ActiveRecord::Base.establish_connection(
   :adapter => 'postgresql',
   :database => 'tree_test',
-  :username => 'tree',
-  :password => 'tree-password',
-  :host => '127.0.0.1'
-#  :username => 'postgres'
+  :username => 'postgres'
 )
 
 class Node < ActiveRecord::Base
