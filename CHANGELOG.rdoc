@@ -1,3 +1,6 @@
+=== v2.0.6
+* Add full support for rails 4.0 and 4.1
+
 === v2.0.5
 * Force integer type on depth result or nil if undetermined
 * Fixed query building bug in #nodes_within
