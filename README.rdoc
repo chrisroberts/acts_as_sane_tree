@@ -1,4 +1,4 @@
-== acts_as_sane_tree 
+== acts_as_sane_tree
 ==== (Building trees with a dash of sanity)
 
 {<img src="https://secure.travis-ci.org/chrisroberts/acts_as_sane_tree.png" />}[http://travis-ci.org/chrisroberts/acts_as_sane_tree]
@@ -11,7 +11,12 @@ A fast way to build trees.
 
 == What version of Rails
 
-As of version 2, acts_as_sane_tree now proudly offers support on Rails 2 as well as Rails 3
+* Rails ~> 4.1.0
+* Rails ~> 4.0.0
+* Rails ~> 3.2.0
+* Rails ~> 3.1.0
+* Rails ~> 3.0.0
+* Rails ~> 2.3.0
 
 == Requirements
 
@@ -52,7 +57,7 @@ http://chrisroberts.github.com/acts_as_sane_tree
 == License
 
 A (now not so large) majority of this was copied directly from the original acts as tree, with the original license:
-* Copyright (c) 2007 David Heinemeier Hansson, released under the MIT license 
+* Copyright (c) 2007 David Heinemeier Hansson, released under the MIT license
 
 The new additions continue:
 * Copyright (c) 2011 Chris Roberts, released under the MIT license
