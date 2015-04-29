@@ -144,11 +144,13 @@ module ActsAsSaneTree
         cache = ActiveSupport::OrderedHash.new
         q.all.each do |item|
           res[item] = ActiveSupport::OrderedHash.new
-          cache[item] = res[item]
+          cache[item.id] = {item: item, values: res[item]}
         end
-        cache.each_pair do |item, values|
-          if(cache[item.parent])
-            cache[item.parent][item] = values
+        cache.each_pair do |item_id, h|
+          if(cache[h[:item].parent_id])
+            item = h[:item]
+            values = h[:values]
+            cache[item.parent_id][:values][item] = values
             res.delete(item)
           end
         end
