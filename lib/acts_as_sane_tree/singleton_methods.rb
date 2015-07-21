@@ -33,6 +33,40 @@ module ActsAsSaneTree
       end
     end
 
+    # nodes:: Array of node ids
+    # options:: Hash with except key and value of node id/ids
+    # Return Array of given nodes and their ancestors except these in options
+    def ancestors_with_nodes(nodes, options={})
+      table_name = configuration[:class].table_name
+      query_select_string = "DISTINCT #{table_name}.*"
+      query_string = <<-SQL
+        (WITH RECURSIVE crumbs AS (
+          SELECT #{table_name}.*
+          FROM #{table_name}
+          WHERE id IN (?)
+          UNION ALL
+          SELECT alias1.*
+          FROM crumbs
+          JOIN #{table_name} alias1 ON alias1.id = crumbs.parent_id
+        ) SELECT * FROM crumbs) as #{table_name}
+      SQL
+      sanitize_query_string = ActiveRecord::Base.send(:sanitize_sql_array, [query_string, Array(nodes)])
+
+      if options[:except]
+        aditional_query_string = <<-SQL
+          WHERE #{table_name}.id NOT IN (?)
+        SQL
+        sanitize_aditional_query_string = ActiveRecord::Base.send(:sanitize_sql_array, [aditional_query_string, Array(options[:except])])
+        sanitize_query_string += sanitize_aditional_query_string
+      end
+
+      if(rails_arel?)
+        configuration[:class].select(query_select_string).from(sanitize_query_string)
+      else
+        configuration[:class].scoped(select: query_select_string, from: sanitize_query_string)
+      end
+    end
+
     # src:: Array of nodes
     # chk:: Array of nodes
     # Return true if any nodes within chk are found within src

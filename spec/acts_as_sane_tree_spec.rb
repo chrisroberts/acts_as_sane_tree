@@ -196,6 +196,12 @@ describe ActsAsSaneTree do
   end
 
   describe "when using an acts_as_sane_tree class" do
+    before do
+      @root_0 = Node.find_by(name: :root_0)
+      @root_1 = Node.find_by(name: :root_1)
+      @node_0_10 = Node.find_by(name: :node_0_10)
+      @node_1_5 = Node.find_by(name: :node_1_5)
+    end
     it "should provide all roots" do
       if(AREL)
         assert_equal Node.where(:parent_id => nil).count, Node.roots.count
@@ -206,6 +212,14 @@ describe ActsAsSaneTree do
     it "should provide a single root" do
       assert_kind_of Node, Node.root
       assert Node.root.parent_id.nil?, 'Expecting root node to have no parent'
+    end
+    it "should provide nodes with all ancestors" do
+      assert_equal Node.find(4).ancestors.count + 1, Node.ancestors_with_nodes(4).length
+      assert_equal @node_0_10.ancestors.count + @node_1_5.ancestors.count + 2, Node.ancestors_with_nodes([@node_0_10.id, @node_1_5.id]).length
+    end
+    it "should provide nodes with all ancestors except given in options" do
+      assert_equal Node.find(4).ancestors.count, Node.ancestors_with_nodes(4, {except: 4}).length
+      assert_equal @node_0_10.ancestors.count + @node_1_5.ancestors.count, Node.ancestors_with_nodes([@node_0_10.id, @node_1_5.id], {except: [@root_0.id, @root_1.id]}).length
     end
     describe "when checking for nodes within other node descendants" do
       before do
